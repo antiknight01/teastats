@@ -9,14 +9,26 @@ const scrollPositions = {};
 let activeIndex = -1;
 
 /* ---------------- API ---------------- */
-async function api(path) {
-  if (cache.has(path)) return cache.get(path);
-  const res = await fetch(BASE + path);
-  if (!res.ok) throw new Error("API failure");
-  const data = await res.json();
-  cache.set(path, data);
-  return data;
-}
+async function api(path, retries = 2) {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 30000); // 30s
+
+    const res = await fetch(BASE + path, {
+      signal: controller.signal
+    });
+
+    clearTimeout(timeout);
+
+    if (!res.ok) throw new Error("HTTP error");
+    return await res.json();
+  } catch (err) {
+    if (retries > 0) {
+      return api(path, retries - 1);
+    }
+    throw err;
+  }
+                 }
 
 /* ---------------- ROUTING ---------------- */
 function go(path) {
@@ -54,7 +66,11 @@ async function router() {
 
     window.scrollTo(0, scrollPositions[path] || 0);
   } catch {
-    app.innerHTML = `<div class="muted">Failed to load.</div>`;
+  app.innerHTML = `
+    <div class="muted" style="padding:40px;text-align:center">
+      Waking up server… please wait a moment.
+    </div>
+  `;
   }
 }
 
