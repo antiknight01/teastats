@@ -1,105 +1,176 @@
-const BASE = "https://tracker-s9qq.onrender.com";
+const API = "https://tracker-s9qq.onrender.com";
+const app = document.getElementById("app");
 
-// ---------- UTIL ----------
-function qs(name) {
-  return new URLSearchParams(window.location.search).get(name);
+/* -------------------------
+   ROUTER
+------------------------- */
+
+window.onpopstate = () => render(location.pathname);
+
+function navigate(path) {
+  history.pushState({}, "", path);
+  render(path);
 }
+
+function goHome() {
+  navigate("/");
+}
+
+/* -------------------------
+   FETCH HELPERS
+------------------------- */
 
 async function api(path) {
-  const res = await fetch(BASE + path);
-  return await res.json();
+  const res = await fetch(API + path);
+  return res.json();
 }
 
-// ---------- HOME ----------
-async function loadHome() {
+/* -------------------------
+   RENDER
+------------------------- */
+
+async function render(path) {
+  if (path === "/") return renderHome();
+
+  if (path.startsWith("/player/")) {
+    const name = decodeURIComponent(path.split("/player/")[1]);
+    return renderPlayer(name);
+  }
+
+  if (path.startsWith("/match/")) {
+    const id = path.split("/match/")[1];
+    return renderMatch(id);
+  }
+}
+
+/* -------------------------
+   HOME
+------------------------- */
+
+async function renderHome() {
   const data = await api("/");
-  const lb = document.getElementById("leaderboardList");
-  const recent = document.getElementById("recentMatches");
 
-  lb.innerHTML = "";
-  data.leaderboard.forEach(p => {
-    const div = document.createElement("div");
-    div.className = "card leader";
-    div.innerHTML = `
-      <span>${p.display_name}</span>
-      <span class="win">${p.wins}W</span>
-    `;
-    div.onclick = () => location.href = `/player.html?name=${p.display_name}`;
-    lb.appendChild(div);
-  });
+  const leaderboard = data.leaderboard
+    .sort((a, b) => b.wins - a.wins)
+    .map(
+      p => `
+      <div class="leaderboard-item" onclick="navigate('/player/${encodeURIComponent(p.display_name)}')">
+        <span>${p.display_name}</span>
+        <span>🏆 ${p.wins}</span>
+      </div>`
+    )
+    .join("");
 
-  recent.innerHTML = "";
-  data.recent_matches.forEach(m => {
-    const div = document.createElement("div");
-    div.className = "card";
-    div.innerHTML = `
-      Match • Winner: <b>${m.winner}</b>
-      <div class="muted">${m.duration_sec}s</div>
-    `;
-    div.onclick = () => location.href = `/match.html?id=${m.id}`;
-    recent.appendChild(div);
-  });
+  const recent = data.recent_matches
+    .map(
+      m => `
+      <div class="card match" onclick="navigate('/match/${m.id}')">
+        <b>${m.winner}</b> won • ${Math.floor(m.duration_sec / 60)} min
+      </div>`
+    )
+    .join("");
 
-  document.getElementById("searchBox").oninput = async e => {
-    const q = e.target.value.trim();
-    if (!q) return;
-    const res = await api(`/search?q=${q}`);
-    lb.innerHTML = "";
-    res.forEach(p => {
-      const d = document.createElement("div");
-      d.className = "card";
-      d.textContent = p.display_name;
-      d.onclick = () => location.href = `/player.html?name=${p.display_name}`;
-      lb.appendChild(d);
-    });
-  };
-}
+  app.innerHTML = `
+    <div class="card">
+      <h2>Leaderboard</h2>
+      ${leaderboard}
+    </div>
 
-// ---------- PLAYER ----------
-async function loadPlayer() {
-  const name = qs("name");
-  const data = await api(`/player/${name}`);
-
-  const p = data.profile;
-  document.getElementById("profile").innerHTML = `
-    <h1>${p.display_name}</h1>
-    <p>Games: ${p.games_played}</p>
-    <p class="win">Wins: ${p.wins}</p>
-    <p class="loss">Losses: ${p.losses}</p>
-    <p>Total words: ${p.total_words}</p>
+    <div class="card">
+      <h2>Recent Matches</h2>
+      ${recent}
+    </div>
   `;
-
-  const t = document.getElementById("timeline");
-  data.timeline.forEach(m => {
-    const d = document.createElement("div");
-    d.className = "card";
-    d.innerHTML = `
-      ${m.result.toUpperCase()} • ${m.ago}
-    `;
-    d.onclick = () => location.href = `/match.html?id=${m.match_id}`;
-    t.appendChild(d);
-  });
 }
 
-// ---------- MATCH ----------
-async function loadMatch() {
-  const id = qs("id");
+/* -------------------------
+   PLAYER
+------------------------- */
+
+async function renderPlayer(name) {
+  const data = await api(`/player/${encodeURIComponent(name)}`);
+
+  const timeline = data.timeline
+    .map(
+      t => `
+      <div class="timeline-item" onclick="navigate('/match/${t.match_id}')">
+        ${t.result.toUpperCase()} • ${t.ago}
+      </div>`
+    )
+    .join("");
+
+  app.innerHTML = `
+    <div class="card">
+      <h2>${data.profile.display_name}</h2>
+      <p>Games: ${data.profile.games_played}</p>
+      <p>Wins: ${data.profile.wins}</p>
+      <p>Losses: ${data.profile.losses}</p>
+      <p>Total Words: ${data.profile.total_words}</p>
+    </div>
+
+    <div class="card">
+      <h2>Match Timeline</h2>
+      ${timeline}
+    </div>
+  `;
+}
+
+/* -------------------------
+   MATCH
+------------------------- */
+
+async function renderMatch(id) {
   const m = await api(`/match/${id}`);
 
-  const el = document.getElementById("match");
-  el.innerHTML = `
-    <h1>Match</h1>
-    <p>Winner: ${m.winner}</p>
-    <p>Duration: ${m.duration_sec}s</p>
-  `;
+  const players = m.players
+    .map(
+      p => `
+      <div class="card">
+        <b>${p.name}</b> — ${p.result.toUpperCase()}
+        <div class="word-list">
+          Words (${p.word_count}): ${p.words.join(", ")}
+        </div>
+      </div>`
+    )
+    .join("");
 
-  m.players.forEach(p => {
-    const d = document.createElement("div");
-    d.className = "card";
-    d.innerHTML = `
-      <b>${p.name}</b> (${p.result})
-      <div class="words">${p.words.join(", ")}</div>
-    `;
-    el.appendChild(d);
-  });
+  app.innerHTML = `
+    <div class="card">
+      <h2>Match ${id}</h2>
+      <p>Winner: ${m.winner}</p>
+      <p>Duration: ${Math.floor(m.duration_sec / 60)} min</p>
+    </div>
+
+    ${players}
+  `;
 }
+
+/* -------------------------
+   SEARCH
+------------------------- */
+
+async function searchPlayers(q) {
+  if (!q) return renderHome();
+
+  const res = await api(`/search?q=${encodeURIComponent(q)}`);
+
+  app.innerHTML = `
+    <div class="card">
+      <h2>Search Results</h2>
+      ${res
+        .map(
+          p => `
+          <div class="leaderboard-item" onclick="navigate('/player/${encodeURIComponent(p.display_name)}')">
+            ${p.display_name}
+          </div>`
+        )
+        .join("")}
+    </div>
+  `;
+}
+
+/* -------------------------
+   INIT
+------------------------- */
+
+render(location.pathname);
