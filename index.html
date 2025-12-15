@@ -1,312 +1,370 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>BlackTea Arena</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
+<meta charset="UTF-8" />
+<title>BlackTea Tracker</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-/* =======================
-   BASE / THEME
-======================= */
-body {
+<style>
+/* =========================
+   RESET
+========================= */
+* {
   margin: 0;
-  background: #0e0e11;
-  color: #eee;
-  font-family: system-ui, sans-serif;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Inter, system-ui, sans-serif;
 }
 
+body {
+  background: #0e0e11;
+  color: #eaeaf0;
+  min-height: 100vh;
+}
+
+/* =========================
+   LAYOUT
+========================= */
 header {
-  padding: 20px;
-  background: #14141b;
+  padding: 16px 20px;
+  background: #14141a;
   display: flex;
-  gap: 15px;
   align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #222;
 }
 
 header h1 {
-  margin: 0;
-  font-size: 22px;
+  font-size: 20px;
+  font-weight: 700;
 }
 
-header input {
-  flex: 1;
-  padding: 10px;
-  border-radius: 8px;
+nav button {
+  background: transparent;
   border: none;
-  background: #222;
+  color: #aaa;
+  font-size: 14px;
+  margin-left: 12px;
+  cursor: pointer;
+}
+
+nav button:hover {
   color: #fff;
 }
 
-main {
+#app {
   padding: 20px;
+  max-width: 1100px;
+  margin: auto;
+}
+
+/* =========================
+   COMMON
+========================= */
+.section {
+  margin-bottom: 30px;
+}
+
+.section h2 {
+  font-size: 18px;
+  margin-bottom: 12px;
 }
 
 .card {
-  background: #18181f;
-  border-radius: 16px;
-  padding: 20px;
-  margin-bottom: 20px;
-  box-shadow: 0 0 25px rgba(0,0,0,.6);
-}
-
-h2 {
-  margin-top: 0;
-}
-
-/* =======================
-   TABLE / LIST
-======================= */
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-tr {
+  background: #15151c;
+  border: 1px solid #24242c;
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 10px;
   cursor: pointer;
 }
 
-tr:hover {
-  background: #2a2a35;
+.card:hover {
+  background: #1b1b25;
 }
 
-td, th {
-  padding: 10px;
-  text-align: left;
-}
-
-/* =======================
-   MATCH / PLAYER BLOCKS
-======================= */
-.item {
-  padding: 12px;
-  background: #222;
-  border-radius: 12px;
-  margin: 10px 0;
-  cursor: pointer;
-}
-
-.item:hover {
-  background: #2e2e3a;
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
 }
 
 .badge {
   display: inline-block;
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 12px;
-  background: #333;
-}
-
-.win { background: #1b5e20; }
-.loss { background: #8e0000; }
-
-button {
-  margin-top: 8px;
-  background: #ff9800;
-  border: none;
-  padding: 6px 12px;
+  padding: 2px 8px;
   border-radius: 6px;
-  cursor: pointer;
+  font-size: 12px;
+  background: #2a2a36;
+  margin-left: 6px;
 }
 
-.words {
-  margin-top: 6px;
-  font-size: 13px;
-  color: #ccc;
-  display: none;
+.win { color: #4ade80; }
+.loss { color: #f87171; }
+
+/* =========================
+   SEARCH
+========================= */
+.search-box {
+  margin-bottom: 20px;
 }
 
-.show { display: block; }
-
-.hidden {
-  display: none;
+.search-box input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  background: #0f0f14;
+  color: #fff;
+  font-size: 14px;
 }
 
+/* =========================
+   MATCH
+========================= */
+.player-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid #222;
+}
+
+.player-row:last-child {
+  border-bottom: none;
+}
+
+/* =========================
+   LINKS
+========================= */
+a {
+  color: inherit;
+  text-decoration: none;
+}
 </style>
 </head>
+
 <body>
 
 <header>
-  <h1 onclick="goHome()">☕ BlackTea Arena</h1>
-  <input id="searchBox" placeholder="Search player..." />
+  <h1>☕ BlackTea Tracker</h1>
+  <nav>
+    <button onclick="goHome()">Home</button>
+  </nav>
 </header>
 
-<main>
-
-<!-- HOME -->
-<section id="homeView" class="view">
-  <div class="card">
-    <h2>🏆 Leaderboard</h2>
-    <table id="leaderboard"></table>
-  </div>
-
-  <div class="card">
-    <h2>🕒 Recent Matches</h2>
-    <div id="recentMatches"></div>
-  </div>
-</section>
-
-<!-- PLAYER -->
-<section id="playerView" class="view hidden">
-  <div class="card" id="playerProfile"></div>
-
-  <div class="card">
-    <h2>📜 Match Timeline</h2>
-    <div id="playerTimeline"></div>
-  </div>
-</section>
-
-<!-- MATCH -->
-<section id="matchView" class="view hidden">
-  <div class="card" id="matchDetail"></div>
-</section>
-
-</main>
+<div id="app"></div>
 
 <script>
-/* =======================
+/* =========================
    CONFIG
-======================= */
-const API = "https://tracker-s9qq.onrender.com";
+========================= */
+const API_BASE = "https://tracker-s9qq.onrender.com";
 
-/* =======================
+/* =========================
    ROUTER
-======================= */
-window.addEventListener("hashchange", router);
-window.addEventListener("load", router);
-
-function router() {
+========================= */
+function route() {
   const hash = location.hash || "#/";
-  hideAll();
+  const parts = hash.replace("#/", "").split("/");
 
-  if (hash === "#/" || hash === "") {
-    document.getElementById("homeView").classList.remove("hidden");
+  if (parts[0] === "player") {
+    loadPlayer(decodeURIComponent(parts[1]));
+  } else if (parts[0] === "match") {
+    loadMatch(parts[1]);
+  } else {
     loadHome();
   }
-  else if (hash.startsWith("#/player/")) {
-    document.getElementById("playerView").classList.remove("hidden");
-    loadPlayer(decodeURIComponent(hash.split("/")[2]));
-  }
-  else if (hash.startsWith("#/match/")) {
-    document.getElementById("matchView").classList.remove("hidden");
-    loadMatch(hash.split("/")[2]);
-  }
 }
 
-function hideAll() {
-  document.querySelectorAll(".view").forEach(v => v.classList.add("hidden"));
-}
+window.addEventListener("hashchange", route);
+window.addEventListener("load", route);
 
 function goHome() {
   location.hash = "#/";
 }
-function goPlayer(name) {
-  location.hash = "#/player/" + encodeURIComponent(name);
-}
-function goMatch(id) {
-  location.hash = "#/match/" + id;
-}
 
-/* =======================
-   API
-======================= */
-async function api(path) {
-  const r = await fetch(API + path);
-  return r.json();
-}
-
-/* =======================
+/* =========================
    HOME
-======================= */
+========================= */
 async function loadHome() {
-  const data = await api("/");
-  const lb = document.getElementById("leaderboard");
+  const app = document.getElementById("app");
+  app.innerHTML = "<p>Loading...</p>";
 
-  lb.innerHTML = `
-    <tr><th>#</th><th>Name</th><th>Wins</th></tr>
-    ${data.leaderboard.map((p,i)=>`
-      <tr onclick="goPlayer('${p.display_name}')">
-        <td>${i+1}</td>
-        <td>${p.display_name}</td>
-        <td>${p.wins}</td>
-      </tr>`).join("")}
+  const [homeRes, playersRes] = await Promise.all([
+    fetch(API_BASE + "/").then(r => r.json()),
+    fetch(API_BASE + "/players").then(r => r.json())
+  ]);
+
+  app.innerHTML = `
+    <div class="section">
+      <h2>Leaderboard</h2>
+      <div class="grid" id="leaderboard"></div>
+    </div>
+
+    <div class="section">
+      <h2>Recent Matches</h2>
+      <div id="recent"></div>
+    </div>
+
+    <div class="section">
+      <h2>Search Player</h2>
+      <div class="search-box">
+        <input id="searchInput" placeholder="Type a name..." />
+      </div>
+      <div id="searchResults"></div>
+    </div>
   `;
 
-  document.getElementById("recentMatches").innerHTML =
-    data.recent_matches.map(m=>`
-      <div class="item" onclick="goMatch('${m.id}')">
-        🏆 ${m.winner} • ${Math.floor(m.duration_sec/60)}m
-      </div>
-    `).join("");
+  renderLeaderboard(playersRes);
+  renderRecent(homeRes.recent_matches);
+  setupSearch();
 }
 
-/* =======================
+function renderLeaderboard(players) {
+  const el = document.getElementById("leaderboard");
+  el.innerHTML = "";
+
+  players.forEach(p => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <strong>${p.name}</strong><br>
+      Wins: ${p.wins} · Losses: ${p.losses}
+    `;
+    card.onclick = () => location.hash = "#/player/" + encodeURIComponent(p.name);
+    el.appendChild(card);
+  });
+}
+
+function renderRecent(matches) {
+  const el = document.getElementById("recent");
+  el.innerHTML = "";
+
+  matches.forEach(m => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <strong>${m.winner}</strong> won<br>
+      Duration: ${Math.floor(m.duration_sec / 60)}m ${m.duration_sec % 60}s
+    `;
+    card.onclick = () => location.hash = "#/match/" + m.id;
+    el.appendChild(card);
+  });
+}
+
+/* =========================
    SEARCH
-======================= */
-document.getElementById("searchBox").addEventListener("input", async e => {
-  const q = e.target.value.trim();
-  if (!q) return loadHome();
+========================= */
+function setupSearch() {
+  const input = document.getElementById("searchInput");
+  const out = document.getElementById("searchResults");
 
-  const res = await api("/players?q=" + q);
-  const lb = document.getElementById("leaderboard");
+  input.addEventListener("input", async () => {
+    const q = input.value.trim();
+    if (!q) {
+      out.innerHTML = "";
+      return;
+    }
 
-  lb.innerHTML = res.map((p,i)=>`
-    <tr onclick="goPlayer('${p.name}')">
-      <td>${i+1}</td>
-      <td>${p.name}</td>
-      <td>${p.wins}</td>
-    </tr>
-  `).join("");
-});
+    const res = await fetch(API_BASE + "/players?q=" + encodeURIComponent(q));
+    const players = await res.json();
 
-/* =======================
-   PLAYER
-======================= */
-async function loadPlayer(name) {
-  const data = await api("/player/" + name);
-
-  document.getElementById("playerProfile").innerHTML = `
-    <h2>${data.profile.display_name}</h2>
-    <p>Games: ${data.profile.games_played}</p>
-    <p>Wins: ${data.profile.wins}</p>
-    <p>Losses: ${data.profile.losses}</p>
-    <p>Total Words: ${data.profile.total_words}</p>
-  `;
-
-  document.getElementById("playerTimeline").innerHTML =
-    data.timeline.map(t=>`
-      <div class="item" onclick="goMatch('${t.match_id}')">
-        <span class="badge ${t.result}">${t.result.toUpperCase()}</span>
-        • ${t.ago}
-      </div>
-    `).join("");
+    out.innerHTML = "";
+    players.forEach(p => {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.textContent = p.name;
+      card.onclick = () => location.hash = "#/player/" + encodeURIComponent(p.name);
+      out.appendChild(card);
+    });
+  });
 }
 
-/* =======================
-   MATCH
-======================= */
-async function loadMatch(id) {
-  const m = await api("/match/" + id);
+/* =========================
+   PLAYER
+========================= */
+async function loadPlayer(name) {
+  const app = document.getElementById("app");
+  app.innerHTML = "<p>Loading player...</p>";
 
-  document.getElementById("matchDetail").innerHTML = `
-    <h2>Match ${id}</h2>
-    <p>Winner: ${m.winner}</p>
-    <p>Duration: ${Math.floor(m.duration_sec/60)} minutes</p>
+  const res = await fetch(API_BASE + "/player/" + encodeURIComponent(name));
+  const data = await res.json();
 
-    ${m.players.map(p=>`
-      <div class="item">
-        <b>${p.name}</b>
-        <span class="badge ${p.result}">${p.result}</span><br>
-        Words: ${p.word_count}
-        <br>
-        <button onclick="this.nextElementSibling.classList.toggle('show')">
-          Show words
-        </button>
-        <div class="words">${p.words.join(", ")}</div>
-      </div>
-    `).join("")}
+  if (data.error) {
+    app.innerHTML = "<p>Player not found</p>";
+    return;
+  }
+
+  const p = data.profile;
+
+  app.innerHTML = `
+    <div class="section">
+      <h2>${p.display_name}</h2>
+      <p>
+        Games: ${p.games_played} · 
+        Wins: <span class="win">${p.wins}</span> · 
+        Losses: <span class="loss">${p.losses}</span>
+      </p>
+    </div>
+
+    <div class="section">
+      <h2>Match Timeline</h2>
+      <div id="timeline"></div>
+    </div>
   `;
+
+  const tl = document.getElementById("timeline");
+  data.timeline.forEach(t => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      ${t.result.toUpperCase()} · ${t.ago}
+    `;
+    card.onclick = () => location.hash = "#/match/" + t.match_id;
+    tl.appendChild(card);
+  });
+}
+
+/* =========================
+   MATCH
+========================= */
+async function loadMatch(id) {
+  const app = document.getElementById("app");
+  app.innerHTML = "<p>Loading match...</p>";
+
+  const res = await fetch(API_BASE + "/match/" + id);
+  const m = await res.json();
+
+  if (m.error) {
+    app.innerHTML = "<p>Match not found</p>";
+    return;
+  }
+
+  app.innerHTML = `
+    <div class="section">
+      <h2>Match ${m.id}</h2>
+      <p>
+        Winner: <strong>${m.winner}</strong><br>
+        Duration: ${Math.floor(m.duration_sec / 60)}m ${m.duration_sec % 60}s
+      </p>
+    </div>
+
+    <div class="section">
+      <h2>Players</h2>
+      <div id="players"></div>
+    </div>
+  `;
+
+  const el = document.getElementById("players");
+  m.players.forEach(pl => {
+    const row = document.createElement("div");
+    row.className = "card";
+    row.innerHTML = `
+      <strong>${pl.name}</strong>
+      <span class="badge ${pl.result}">${pl.result}</span><br>
+      Words: ${pl.word_count}
+    `;
+    el.appendChild(row);
+  });
 }
 </script>
 
