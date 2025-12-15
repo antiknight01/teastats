@@ -1,26 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BlackTea Stats</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <header>
-    <h1>BlackTea Stats</h1>
-    <p>Live player and match analytics</p>
-  </header>
+<h1>☕ BlackTea Leaderboard</h1>
 
-  <main id="content">
-    <p>Loading stats…</p>
-  </main>
+<input id="search" placeholder="Search player..." />
 
-  <footer>
-    <p>Powered by BlackTea Tracker</p>
-  </footer>
+<div id="leaderboard"></div>
 
-  <script src="script.js"></script>
+<h2>🕒 Recent Matches</h2>
+<div id="recent"></div>
+
+<script src="app.js"></script>
+<script>
+  loadHome();
+</script>
+
 </body>
 </html>
