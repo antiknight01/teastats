@@ -1,26 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> ☕ Blacktea Stats Leaderboard</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <title> ☕ Blacktea Tracker</title>
+
+  <!-- Mobile -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- SEO (safe, generic) -->
+  <meta name="description" content="Game match tracker with leaderboard, player profiles, and match history." />
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Prevent flash of unstyled content -->
+  <style>
+    body { visibility: hidden; }
+  </style>
 </head>
+
 <body>
-    <header class="navbar">
-        <a href="/" class="logo" data-route>Word Stats</a>
-        <div class="search-container">
-            <input type="text" id="search-input" placeholder="Search player by name...">
-            <div id="search-results" class="search-results-dropdown">
-                </div>
-        </div>
-    </header>
+  <!-- HEADER -->
+  <header>
+    <h1 id="logo">Game Tracker</h1>
 
-    <main id="content">
-        <p class="loading-message">Loading statistics...</p>
-    </main>
+    <!-- Search -->
+    <input
+      id="searchInput"
+      type="search"
+      placeholder="Search players…"
+      autocomplete="off"
+      spellcheck="false"
+      aria-label="Search players"
+    />
 
-    <script src="script.js"></script>
+    <!-- Search dropdown -->
+    <div id="searchResults" role="listbox"></div>
+  </header>
+
+  <!-- APP ROOT -->
+  <main id="app" role="main"></main>
+
+  <!-- Scripts -->
+  <script src="script.js"></script>
+
+  <!-- Reveal once JS loads -->
+  <script>
+    document.body.style.visibility = "visible";
+  </script>
 </body>
-</html>
+    </html>
