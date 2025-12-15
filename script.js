@@ -201,5 +201,8 @@ async function match(id) {
   app.append(h, p);
 }
 
+setInterval(() => {
+  fetch(BASE + "/").catch(() => {});
+}, 5 * 60 * 1000); // every 5 min
 /* ---------------- INIT ---------------- */
 router();
