@@ -2,371 +2,622 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>BlackTea Tracker</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Game Stats</title>
 
 <style>
-/* =========================
+/* =====================================================================
+   DESIGN SYSTEM — TOKENS
+   ===================================================================== */
+:root {
+  --bg-0: #080a0f;
+  --bg-1: #0e1118;
+  --bg-2: #141926;
+  --bg-3: #1a2030;
+  --bg-4: #21283a;
+
+  --border-0: #1f2535;
+  --border-1: #2a3248;
+
+  --text-0: #f5f7fb;
+  --text-1: #d7dcec;
+  --text-2: #a8b0c8;
+  --text-3: #6f7893;
+
+  --accent-0: #4da3ff;
+  --accent-1: #6bb5ff;
+  --accent-2: #2f6fbf;
+
+  --win-bg: rgba(77,163,255,0.18);
+  --win-text: #6bb5ff;
+
+  --loss-bg: rgba(255,92,92,0.18);
+  --loss-text: #ff7b7b;
+
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
+  --shadow-md: 0 12px 32px rgba(0,0,0,0.55);
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  --font-xs: 12px;
+  --font-sm: 13px;
+  --font-md: 14px;
+  --font-lg: 16px;
+  --font-xl: 20px;
+  --font-xxl: 28px;
+
+  --ease-fast: 120ms ease;
+  --ease-med: 220ms ease;
+  --ease-slow: 380ms ease;
+}
+
+/* =====================================================================
    RESET
-========================= */
-* {
+   ===================================================================== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html, body {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
-  font-family: Inter, system-ui, sans-serif;
+  background: radial-gradient(
+    1200px 800px at 50% -200px,
+    #1a2340,
+    var(--bg-0)
+  );
+  color: var(--text-0);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell;
 }
 
-body {
-  background: #0e0e11;
-  color: #eaeaf0;
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button, input {
+  font-family: inherit;
+}
+
+/* =====================================================================
+   APP SHELL
+   ===================================================================== */
+#app-root {
   min-height: 100vh;
-}
-
-/* =========================
-   LAYOUT
-========================= */
-header {
-  padding: 16px 20px;
-  background: #14141a;
   display: flex;
+  flex-direction: column;
+}
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  backdrop-filter: blur(10px);
+  background: linear-gradient(
+    180deg,
+    rgba(14,17,24,0.92),
+    rgba(14,17,24,0.86)
+  );
+  border-bottom: 1px solid var(--border-0);
+}
+
+.header-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: var(--space-4);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-4);
   align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid #222;
 }
 
-header h1 {
-  font-size: 20px;
-  font-weight: 700;
-}
-
-nav button {
-  background: transparent;
-  border: none;
-  color: #aaa;
-  font-size: 14px;
-  margin-left: 12px;
+.logo {
+  font-size: var(--font-xl);
+  font-weight: 800;
+  letter-spacing: 0.4px;
   cursor: pointer;
 }
 
-nav button:hover {
-  color: #fff;
+.logo:hover {
+  color: var(--accent-0);
 }
 
-#app {
-  padding: 20px;
-  max-width: 1100px;
-  margin: auto;
+.search {
+  position: relative;
 }
 
-/* =========================
-   COMMON
-========================= */
-.section {
-  margin-bottom: 30px;
+.search input {
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--bg-2);
+  border: 1px solid var(--border-0);
+  border-radius: var(--radius-md);
+  color: var(--text-0);
+  transition: border var(--ease-fast), box-shadow var(--ease-fast);
 }
 
-.section h2 {
-  font-size: 18px;
-  margin-bottom: 12px;
+.search input::placeholder {
+  color: var(--text-3);
 }
 
-.card {
-  background: #15151c;
-  border: 1px solid #24242c;
-  border-radius: 10px;
-  padding: 14px;
-  margin-bottom: 10px;
-  cursor: pointer;
+.search input:focus {
+  outline: none;
+  border-color: var(--accent-0);
+  box-shadow: 0 0 0 1px var(--accent-0);
 }
 
-.card:hover {
-  background: #1b1b25;
+/* =====================================================================
+   MAIN CONTENT
+   ===================================================================== */
+main {
+  flex: 1;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-4) var(--space-8);
+  width: 100%;
 }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: var(--space-5);
 }
 
-.badge {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 6px;
-  font-size: 12px;
-  background: #2a2a36;
-  margin-left: 6px;
+/* =====================================================================
+   CARD SYSTEM
+   ===================================================================== */
+.card {
+  background: linear-gradient(180deg, var(--bg-2), var(--bg-3));
+  border: 1px solid var(--border-0);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-sm);
+  transition:
+    transform var(--ease-fast),
+    box-shadow var(--ease-fast),
+    border var(--ease-fast);
 }
 
-.win { color: #4ade80; }
-.loss { color: #f87171; }
-
-/* =========================
-   SEARCH
-========================= */
-.search-box {
-  margin-bottom: 20px;
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-1);
 }
 
-.search-box input {
-  width: 100%;
-  padding: 12px;
-  border-radius: 8px;
-  border: 1px solid #333;
-  background: #0f0f14;
-  color: #fff;
-  font-size: 14px;
-}
-
-/* =========================
-   MATCH
-========================= */
-.player-row {
+.card-header {
   display: flex;
   justify-content: space-between;
-  padding: 6px 0;
-  border-bottom: 1px solid #222;
+  align-items: baseline;
+  margin-bottom: var(--space-3);
 }
 
-.player-row:last-child {
+.card-title {
+  font-size: var(--font-lg);
+  font-weight: 700;
+}
+
+.card-meta {
+  font-size: var(--font-sm);
+  color: var(--text-3);
+}
+
+/* =====================================================================
+   LISTS / ROWS
+   ===================================================================== */
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--border-0);
+}
+
+.row:last-child {
   border-bottom: none;
 }
 
-/* =========================
-   LINKS
-========================= */
-a {
-  color: inherit;
-  text-decoration: none;
+.row.clickable {
+  cursor: pointer;
+  transition: background var(--ease-fast), padding var(--ease-fast);
+}
+
+.row.clickable:hover {
+  background: rgba(255,255,255,0.03);
+  padding-left: var(--space-2);
+}
+
+/* =====================================================================
+   TABLE
+   ===================================================================== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  text-align: left;
+  font-size: var(--font-xs);
+  color: var(--text-3);
+  padding-bottom: var(--space-2);
+}
+
+td {
+  padding: var(--space-2) 0;
+  font-size: var(--font-md);
+}
+
+/* =====================================================================
+   BADGES
+   ===================================================================== */
+.badge {
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: var(--font-xs);
+  font-weight: 700;
+}
+
+.badge.win {
+  background: var(--win-bg);
+  color: var(--win-text);
+}
+
+.badge.loss {
+  background: var(--loss-bg);
+  color: var(--loss-text);
+}
+
+/* =====================================================================
+   STATES
+   ===================================================================== */
+.state {
+  text-align: center;
+  padding: var(--space-8);
+  color: var(--text-2);
+}
+
+.spinner {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 4px solid var(--border-0);
+  border-top-color: var(--accent-0);
+  margin: 0 auto var(--space-4);
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* =====================================================================
+   MATCH DETAILS
+   ===================================================================== */
+.player {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.player-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.toggle {
+  font-size: var(--font-sm);
+  color: var(--accent-0);
+  cursor: pointer;
+}
+
+.toggle:hover {
+  text-decoration: underline;
+}
+
+.words {
+  display: none;
+  padding-left: var(--space-4);
+}
+
+.words li {
+  font-size: var(--font-sm);
+  color: var(--text-1);
+  padding: 2px 0;
+}
+
+/* =====================================================================
+   TIMELINE
+   ===================================================================== */
+.timeline-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--border-0);
+}
+
+.timeline-item:last-child {
+  border-bottom: none;
+}
+
+.timeline-meta {
+  font-size: var(--font-sm);
+  color: var(--text-3);
+}
+
+/* =====================================================================
+   RESPONSIVE
+   ===================================================================== */
+@media (max-width: 760px) {
+  .header-inner {
+    grid-template-columns: 1fr;
+  }
 }
 </style>
 </head>
 
 <body>
-
-<header>
-  <h1>☕ BlackTea Tracker</h1>
-  <nav>
-    <button onclick="goHome()">Home</button>
-  </nav>
-</header>
-
-<div id="app"></div>
+<div id="app-root">
+  <header>
+    <div class="header-inner">
+      <div class="logo" id="go-home">Game Stats</div>
+      <div class="search">
+        <input id="search-input" placeholder="Search players…" />
+      </div>
+    </div>
+  </header>
+  <main id="app"></main>
+</div>
 
 <script>
-/* =========================
+/* =====================================================================
    CONFIG
-========================= */
+   ===================================================================== */
 const API_BASE = "https://tracker-s9qq.onrender.com";
 
-/* =========================
+/* =====================================================================
+   ELEMENTS
+   ===================================================================== */
+const app = document.getElementById("app");
+const searchInput = document.getElementById("search-input");
+const goHome = document.getElementById("go-home");
+
+/* =====================================================================
+   NAVIGATION
+   ===================================================================== */
+goHome.onclick = () => navigate("/");
+
+let searchTimer;
+searchInput.oninput = () => {
+  clearTimeout(searchTimer);
+  const q = searchInput.value.trim();
+  if (!q) return;
+  searchTimer = setTimeout(() => {
+    navigate("/search?q=" + encodeURIComponent(q));
+  }, 300);
+};
+
+window.addEventListener("hashchange", router);
+
+/* =====================================================================
    ROUTER
-========================= */
-function route() {
-  const hash = location.hash || "#/";
-  const parts = hash.replace("#/", "").split("/");
+   ===================================================================== */
+function router() {
+  const hash = location.hash.slice(1) || "/";
+  const [path, query] = hash.split("?");
 
-  if (parts[0] === "player") {
-    loadPlayer(decodeURIComponent(parts[1]));
-  } else if (parts[0] === "match") {
-    loadMatch(parts[1]);
-  } else {
-    loadHome();
-  }
+  if (path === "/") return loadHome();
+  if (path === "/search") return loadSearch(new URLSearchParams(query).get("q") || "");
+  if (path.startsWith("/player/")) return loadPlayer(decodeURIComponent(path.slice(8)));
+  if (path.startsWith("/match/")) return loadMatch(decodeURIComponent(path.slice(7)));
 }
 
-window.addEventListener("hashchange", route);
-window.addEventListener("load", route);
-
-function goHome() {
-  location.hash = "#/";
+/* =====================================================================
+   HELPERS
+   ===================================================================== */
+function navigate(path) {
+  location.hash = "#" + path;
 }
 
-/* =========================
+function loading() {
+  app.innerHTML = `
+    <div class="state">
+      <div class="spinner"></div>
+      Loading…
+    </div>`;
+}
+
+function error() {
+  app.innerHTML = `<div class="state">Failed to load data.</div>`;
+}
+
+async function fetchJSON(url) {
+  const r = await fetch(url);
+  if (!r.ok) throw new Error();
+  return r.json();
+}
+
+/* =====================================================================
    HOME
-========================= */
+   ===================================================================== */
 async function loadHome() {
-  const app = document.getElementById("app");
-  app.innerHTML = "<p>Loading...</p>";
+  loading();
+  try {
+    const data = await fetchJSON(API_BASE + "/");
+    data.leaderboard.sort((a,b)=>b.wins-a.wins);
 
-  const [homeRes, playersRes] = await Promise.all([
-    fetch(API_BASE + "/").then(r => r.json()),
-    fetch(API_BASE + "/players").then(r => r.json())
-  ]);
+    app.innerHTML = `
+      <div class="grid">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Leaderboard</div>
+            <div class="card-meta">Wins</div>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Player</th><th>W</th><th>L</th><th>Games</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${data.leaderboard.map(p=>`
+                <tr class="clickable" data-player="${p.display_name}">
+                  <td>${p.display_name}</td>
+                  <td>${p.wins}</td>
+                  <td>${p.losses}</td>
+                  <td>${p.games_played}</td>
+                </tr>`).join("")}
+            </tbody>
+          </table>
+        </div>
 
-  app.innerHTML = `
-    <div class="section">
-      <h2>Leaderboard</h2>
-      <div class="grid" id="leaderboard"></div>
-    </div>
-
-    <div class="section">
-      <h2>Recent Matches</h2>
-      <div id="recent"></div>
-    </div>
-
-    <div class="section">
-      <h2>Search Player</h2>
-      <div class="search-box">
-        <input id="searchInput" placeholder="Type a name..." />
-      </div>
-      <div id="searchResults"></div>
-    </div>
-  `;
-
-  renderLeaderboard(playersRes);
-  renderRecent(homeRes.recent_matches);
-  setupSearch();
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Recent Matches</div>
+            <div class="card-meta">Latest</div>
+          </div>
+          ${data.recent_matches.map(m=>{
+            const id = m.id || m.match_id;
+            return `<div class="row clickable" data-match="${id}">Match ${id}</div>`;
+          }).join("")}
+        </div>
+      </div>`;
+    bindLinks();
+  } catch { error(); }
 }
 
-function renderLeaderboard(players) {
-  const el = document.getElementById("leaderboard");
-  el.innerHTML = "";
-
-  players.forEach(p => {
-    const card = document.createElement("div");
-    card.className = "card";
-    card.innerHTML = `
-      <strong>${p.name}</strong><br>
-      Wins: ${p.wins} · Losses: ${p.losses}
-    `;
-    card.onclick = () => location.hash = "#/player/" + encodeURIComponent(p.name);
-    el.appendChild(card);
-  });
-}
-
-function renderRecent(matches) {
-  const el = document.getElementById("recent");
-  el.innerHTML = "";
-
-  matches.forEach(m => {
-    const card = document.createElement("div");
-    card.className = "card";
-    card.innerHTML = `
-      <strong>${m.winner}</strong> won<br>
-      Duration: ${Math.floor(m.duration_sec / 60)}m ${m.duration_sec % 60}s
-    `;
-    card.onclick = () => location.hash = "#/match/" + m.id;
-    el.appendChild(card);
-  });
-}
-
-/* =========================
+/* =====================================================================
    SEARCH
-========================= */
-function setupSearch() {
-  const input = document.getElementById("searchInput");
-  const out = document.getElementById("searchResults");
-
-  input.addEventListener("input", async () => {
-    const q = input.value.trim();
-    if (!q) {
-      out.innerHTML = "";
-      return;
-    }
-
-    const res = await fetch(API_BASE + "/players?q=" + encodeURIComponent(q));
-    const players = await res.json();
-
-    out.innerHTML = "";
-    players.forEach(p => {
-      const card = document.createElement("div");
-      card.className = "card";
-      card.textContent = p.name;
-      card.onclick = () => location.hash = "#/player/" + encodeURIComponent(p.name);
-      out.appendChild(card);
-    });
-  });
+   ===================================================================== */
+async function loadSearch(q) {
+  loading();
+  try {
+    const players = await fetchJSON(API_BASE + "/players?q=" + encodeURIComponent(q));
+    app.innerHTML = `
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Search</div>
+          <div class="card-meta">"${q}"</div>
+        </div>
+        ${players.map(p=>`
+          <div class="row clickable" data-player="${p.name}">
+            <strong>${p.name}</strong>
+            <span class="card-meta">${p.wins}W ${p.losses}L</span>
+          </div>`).join("")}
+      </div>`;
+    bindLinks();
+  } catch { error(); }
 }
 
-/* =========================
+/* =====================================================================
    PLAYER
-========================= */
+   ===================================================================== */
 async function loadPlayer(name) {
-  const app = document.getElementById("app");
-  app.innerHTML = "<p>Loading player...</p>";
+  loading();
+  try {
+    const data = await fetchJSON(API_BASE + "/player/" + encodeURIComponent(name));
+    const p = data.profile;
 
-  const res = await fetch(API_BASE + "/player/" + encodeURIComponent(name));
-  const data = await res.json();
+    app.innerHTML = `
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">${p.display_name}</div>
+          <div class="card-meta">${p.games_played} games</div>
+        </div>
+        <div class="card-meta">${p.wins}W ${p.losses}L · ${p.total_words} words</div>
+      </div>
 
-  if (data.error) {
-    app.innerHTML = "<p>Player not found</p>";
-    return;
-  }
-
-  const p = data.profile;
-
-  app.innerHTML = `
-    <div class="section">
-      <h2>${p.display_name}</h2>
-      <p>
-        Games: ${p.games_played} · 
-        Wins: <span class="win">${p.wins}</span> · 
-        Losses: <span class="loss">${p.losses}</span>
-      </p>
-    </div>
-
-    <div class="section">
-      <h2>Match Timeline</h2>
-      <div id="timeline"></div>
-    </div>
-  `;
-
-  const tl = document.getElementById("timeline");
-  data.timeline.forEach(t => {
-    const card = document.createElement("div");
-    card.className = "card";
-    card.innerHTML = `
-      ${t.result.toUpperCase()} · ${t.ago}
-    `;
-    card.onclick = () => location.hash = "#/match/" + t.match_id;
-    tl.appendChild(card);
-  });
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Timeline</div>
+          <div class="card-meta">History</div>
+        </div>
+        ${data.timeline.map(t=>`
+          <div class="timeline-item clickable" data-match="${t.match_id}">
+            <span class="badge ${t.result}">${t.result}</span>
+            <div>
+              <div>Match ${t.match_id}</div>
+              <div class="timeline-meta">${t.ago}</div>
+            </div>
+          </div>`).join("")}
+      </div>`;
+    bindLinks();
+  } catch { error(); }
 }
 
-/* =========================
+/* =====================================================================
    MATCH
-========================= */
+   ===================================================================== */
 async function loadMatch(id) {
-  const app = document.getElementById("app");
-  app.innerHTML = "<p>Loading match...</p>";
+  loading();
+  try {
+    const m = await fetchJSON(API_BASE + "/match/" + encodeURIComponent(id));
+    app.innerHTML = `
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Match ${m.id}</div>
+          <div class="card-meta">Winner: ${m.winner} · ${m.duration_sec}s</div>
+        </div>
+      </div>
 
-  const res = await fetch(API_BASE + "/match/" + id);
-  const m = await res.json();
+      ${m.players.map(p=>`
+        <div class="card">
+          <div class="player">
+            <div class="player-head">
+              <div>
+                <strong>${p.name}</strong>
+                <span class="badge ${p.result}">${p.result}</span>
+              </div>
+              <div class="card-meta">${p.word_count} words</div>
+            </div>
+            <div class="toggle">Show words</div>
+            <ul class="words">
+              ${p.words.map(w=>`<li>${w}</li>`).join("")}
+            </ul>
+          </div>
+        </div>`).join("")}`;
 
-  if (m.error) {
-    app.innerHTML = "<p>Match not found</p>";
-    return;
-  }
+    document.querySelectorAll(".toggle").forEach(t=>{
+      t.onclick = ()=>{
+        const ul = t.nextElementSibling;
+        const open = ul.style.display === "block";
+        ul.style.display = open ? "none" : "block";
+        t.textContent = open ? "Show words" : "Hide words";
+      };
+    });
+  } catch { error(); }
+}
 
-  app.innerHTML = `
-    <div class="section">
-      <h2>Match ${m.id}</h2>
-      <p>
-        Winner: <strong>${m.winner}</strong><br>
-        Duration: ${Math.floor(m.duration_sec / 60)}m ${m.duration_sec % 60}s
-      </p>
-    </div>
-
-    <div class="section">
-      <h2>Players</h2>
-      <div id="players"></div>
-    </div>
-  `;
-
-  const el = document.getElementById("players");
-  m.players.forEach(pl => {
-    const row = document.createElement("div");
-    row.className = "card";
-    row.innerHTML = `
-      <strong>${pl.name}</strong>
-      <span class="badge ${pl.result}">${pl.result}</span><br>
-      Words: ${pl.word_count}
-    `;
-    el.appendChild(row);
+/* =====================================================================
+   BINDINGS
+   ===================================================================== */
+function bindLinks() {
+  document.querySelectorAll("[data-player]").forEach(el=>{
+    el.onclick = ()=>navigate("/player/" + encodeURIComponent(el.dataset.player));
+  });
+  document.querySelectorAll("[data-match]").forEach(el=>{
+    el.onclick = ()=>navigate("/match/" + encodeURIComponent(el.dataset.match));
   });
 }
-</script>
 
+/* =====================================================================
+   INIT
+   ===================================================================== */
+router();
+</script>
 </body>
 </html>
