@@ -1,83 +1,91 @@
-:root {
-  --bg: #0f1117;
-  --card: #161a23;
-  --accent: #6ee7b7;
-  --text: #e5e7eb;
-  --muted: #9ca3af;
-}
-
 * {
   box-sizing: border-box;
-  font-family: Inter, system-ui, sans-serif;
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, sans-serif;
 }
 
 body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--text);
-  padding: 20px;
+  background: #0f0f14;
+  color: #eaeaf0;
 }
 
 header {
+  padding: 16px 20px;
+  background: #151520;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 20px;
 }
 
-input {
-  padding: 10px;
-  border-radius: 8px;
+header h1 {
+  cursor: pointer;
+  font-size: 22px;
+}
+
+header input {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 6px;
   border: none;
-  width: 200px;
+  outline: none;
 }
 
-h1, h2 {
-  margin: 10px 0;
+main {
+  padding: 20px;
 }
 
-section {
-  margin-top: 30px;
-}
+/* cards */
 
 .card {
-  background: var(--card);
-  border-radius: 14px;
+  background: #1b1b28;
+  border-radius: 10px;
   padding: 16px;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+.card h2 {
+  margin-bottom: 10px;
+}
+
+/* leaderboard */
+
+.leaderboard-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
   cursor: pointer;
-  transition: transform .15s ease;
 }
 
-.card:hover {
-  transform: scale(1.02);
+.leaderboard-item:hover {
+  background: #26263a;
 }
 
-.leader {
-  display: flex;
-  justify-content: space-between;
+/* match */
+
+.match {
+  cursor: pointer;
 }
 
-.win {
-  color: #22c55e;
+.match:hover {
+  background: #26263a;
 }
 
-.loss {
-  color: #ef4444;
+/* player timeline */
+
+.timeline-item {
+  padding: 10px;
+  cursor: pointer;
 }
 
-.muted {
-  color: var(--muted);
+.timeline-item:hover {
+  background: #26263a;
 }
 
-.player-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 6px 0;
-}
+/* word list */
 
-.words {
-  margin-top: 10px;
-  font-size: 0.9em;
-  color: var(--muted);
-  line-height: 1.4;
-    }
+.word-list {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #bbb;
+  }
