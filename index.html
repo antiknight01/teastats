@@ -1,52 +1,314 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title> ☕ Blacktea Tracker</title>
+<meta charset="UTF-8">
+<title>BlackTea Arena</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
 
-  <!-- Mobile -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+/* =======================
+   BASE / THEME
+======================= */
+body {
+  margin: 0;
+  background: #0e0e11;
+  color: #eee;
+  font-family: system-ui, sans-serif;
+}
 
-  <!-- SEO (safe, generic) -->
-  <meta name="description" content="Game match tracker with leaderboard, player profiles, and match history." />
+header {
+  padding: 20px;
+  background: #14141b;
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
 
-  <!-- Styles -->
-  <link rel="stylesheet" href="style.css" />
+header h1 {
+  margin: 0;
+  font-size: 22px;
+}
 
-  <!-- Prevent flash of unstyled content -->
-  <style>
-    body { visibility: hidden; }
-  </style>
+header input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  background: #222;
+  color: #fff;
+}
+
+main {
+  padding: 20px;
+}
+
+.card {
+  background: #18181f;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 0 25px rgba(0,0,0,.6);
+}
+
+h2 {
+  margin-top: 0;
+}
+
+/* =======================
+   TABLE / LIST
+======================= */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+tr {
+  cursor: pointer;
+}
+
+tr:hover {
+  background: #2a2a35;
+}
+
+td, th {
+  padding: 10px;
+  text-align: left;
+}
+
+/* =======================
+   MATCH / PLAYER BLOCKS
+======================= */
+.item {
+  padding: 12px;
+  background: #222;
+  border-radius: 12px;
+  margin: 10px 0;
+  cursor: pointer;
+}
+
+.item:hover {
+  background: #2e2e3a;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  background: #333;
+}
+
+.win { background: #1b5e20; }
+.loss { background: #8e0000; }
+
+button {
+  margin-top: 8px;
+  background: #ff9800;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.words {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #ccc;
+  display: none;
+}
+
+.show { display: block; }
+
+.hidden {
+  display: none;
+}
+
+</style>
 </head>
-
 <body>
-  <!-- HEADER -->
-  <header>
-    <h1 id="logo">Game Tracker</h1>
 
-    <!-- Search -->
-    <input
-      id="searchInput"
-      type="search"
-      placeholder="Search players…"
-      autocomplete="off"
-      spellcheck="false"
-      aria-label="Search players"
-    />
+<header>
+  <h1 onclick="goHome()">☕ BlackTea Arena</h1>
+  <input id="searchBox" placeholder="Search player..." />
+</header>
 
-    <!-- Search dropdown -->
-    <div id="searchResults" role="listbox"></div>
-  </header>
+<main>
 
-  <!-- APP ROOT -->
-  <main id="app" role="main"></main>
+<!-- HOME -->
+<section id="homeView" class="view">
+  <div class="card">
+    <h2>🏆 Leaderboard</h2>
+    <table id="leaderboard"></table>
+  </div>
 
-  <!-- Scripts -->
-  <script src="script.js"></script>
+  <div class="card">
+    <h2>🕒 Recent Matches</h2>
+    <div id="recentMatches"></div>
+  </div>
+</section>
 
-  <!-- Reveal once JS loads -->
-  <script>
-    document.body.style.visibility = "visible";
-  </script>
+<!-- PLAYER -->
+<section id="playerView" class="view hidden">
+  <div class="card" id="playerProfile"></div>
+
+  <div class="card">
+    <h2>📜 Match Timeline</h2>
+    <div id="playerTimeline"></div>
+  </div>
+</section>
+
+<!-- MATCH -->
+<section id="matchView" class="view hidden">
+  <div class="card" id="matchDetail"></div>
+</section>
+
+</main>
+
+<script>
+/* =======================
+   CONFIG
+======================= */
+const API = "https://tracker-s9qq.onrender.com";
+
+/* =======================
+   ROUTER
+======================= */
+window.addEventListener("hashchange", router);
+window.addEventListener("load", router);
+
+function router() {
+  const hash = location.hash || "#/";
+  hideAll();
+
+  if (hash === "#/" || hash === "") {
+    document.getElementById("homeView").classList.remove("hidden");
+    loadHome();
+  }
+  else if (hash.startsWith("#/player/")) {
+    document.getElementById("playerView").classList.remove("hidden");
+    loadPlayer(decodeURIComponent(hash.split("/")[2]));
+  }
+  else if (hash.startsWith("#/match/")) {
+    document.getElementById("matchView").classList.remove("hidden");
+    loadMatch(hash.split("/")[2]);
+  }
+}
+
+function hideAll() {
+  document.querySelectorAll(".view").forEach(v => v.classList.add("hidden"));
+}
+
+function goHome() {
+  location.hash = "#/";
+}
+function goPlayer(name) {
+  location.hash = "#/player/" + encodeURIComponent(name);
+}
+function goMatch(id) {
+  location.hash = "#/match/" + id;
+}
+
+/* =======================
+   API
+======================= */
+async function api(path) {
+  const r = await fetch(API + path);
+  return r.json();
+}
+
+/* =======================
+   HOME
+======================= */
+async function loadHome() {
+  const data = await api("/");
+  const lb = document.getElementById("leaderboard");
+
+  lb.innerHTML = `
+    <tr><th>#</th><th>Name</th><th>Wins</th></tr>
+    ${data.leaderboard.map((p,i)=>`
+      <tr onclick="goPlayer('${p.display_name}')">
+        <td>${i+1}</td>
+        <td>${p.display_name}</td>
+        <td>${p.wins}</td>
+      </tr>`).join("")}
+  `;
+
+  document.getElementById("recentMatches").innerHTML =
+    data.recent_matches.map(m=>`
+      <div class="item" onclick="goMatch('${m.id}')">
+        🏆 ${m.winner} • ${Math.floor(m.duration_sec/60)}m
+      </div>
+    `).join("");
+}
+
+/* =======================
+   SEARCH
+======================= */
+document.getElementById("searchBox").addEventListener("input", async e => {
+  const q = e.target.value.trim();
+  if (!q) return loadHome();
+
+  const res = await api("/players?q=" + q);
+  const lb = document.getElementById("leaderboard");
+
+  lb.innerHTML = res.map((p,i)=>`
+    <tr onclick="goPlayer('${p.name}')">
+      <td>${i+1}</td>
+      <td>${p.name}</td>
+      <td>${p.wins}</td>
+    </tr>
+  `).join("");
+});
+
+/* =======================
+   PLAYER
+======================= */
+async function loadPlayer(name) {
+  const data = await api("/player/" + name);
+
+  document.getElementById("playerProfile").innerHTML = `
+    <h2>${data.profile.display_name}</h2>
+    <p>Games: ${data.profile.games_played}</p>
+    <p>Wins: ${data.profile.wins}</p>
+    <p>Losses: ${data.profile.losses}</p>
+    <p>Total Words: ${data.profile.total_words}</p>
+  `;
+
+  document.getElementById("playerTimeline").innerHTML =
+    data.timeline.map(t=>`
+      <div class="item" onclick="goMatch('${t.match_id}')">
+        <span class="badge ${t.result}">${t.result.toUpperCase()}</span>
+        • ${t.ago}
+      </div>
+    `).join("");
+}
+
+/* =======================
+   MATCH
+======================= */
+async function loadMatch(id) {
+  const m = await api("/match/" + id);
+
+  document.getElementById("matchDetail").innerHTML = `
+    <h2>Match ${id}</h2>
+    <p>Winner: ${m.winner}</p>
+    <p>Duration: ${Math.floor(m.duration_sec/60)} minutes</p>
+
+    ${m.players.map(p=>`
+      <div class="item">
+        <b>${p.name}</b>
+        <span class="badge ${p.result}">${p.result}</span><br>
+        Words: ${p.word_count}
+        <br>
+        <button onclick="this.nextElementSibling.classList.toggle('show')">
+          Show words
+        </button>
+        <div class="words">${p.words.join(", ")}</div>
+      </div>
+    `).join("")}
+  `;
+}
+</script>
+
 </body>
-    </html>
+</html>
