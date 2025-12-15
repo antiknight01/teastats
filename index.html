@@ -6,617 +6,477 @@
 <title>Game Stats</title>
 
 <style>
-/* =====================================================================
-   DESIGN SYSTEM — TOKENS
-   ===================================================================== */
+/* =========================================================
+   DESIGN SYSTEM
+   ========================================================= */
 :root {
-  --bg-0: #080a0f;
-  --bg-1: #0e1118;
-  --bg-2: #141926;
-  --bg-3: #1a2030;
-  --bg-4: #21283a;
+  --bg-0:#080a0f;
+  --bg-1:#0e1118;
+  --bg-2:#141926;
+  --bg-3:#1c2333;
+  --bg-4:#232b3f;
 
-  --border-0: #1f2535;
-  --border-1: #2a3248;
+  --border-0:#1f2535;
+  --border-1:#2c3550;
 
-  --text-0: #f5f7fb;
-  --text-1: #d7dcec;
-  --text-2: #a8b0c8;
-  --text-3: #6f7893;
+  --text-0:#f5f7fb;
+  --text-1:#d7dcec;
+  --text-2:#a8b0c8;
+  --text-3:#6f7893;
 
-  --accent-0: #4da3ff;
-  --accent-1: #6bb5ff;
-  --accent-2: #2f6fbf;
+  --accent:#4da3ff;
+  --accent-soft:rgba(77,163,255,.15);
 
-  --win-bg: rgba(77,163,255,0.18);
-  --win-text: #6bb5ff;
+  --win:#4da3ff;
+  --win-bg:rgba(77,163,255,.18);
 
-  --loss-bg: rgba(255,92,92,0.18);
-  --loss-text: #ff7b7b;
+  --loss:#ff7b7b;
+  --loss-bg:rgba(255,123,123,.18);
 
-  --radius-xs: 4px;
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 18px;
+  --radius-sm:8px;
+  --radius-md:12px;
+  --radius-lg:18px;
 
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
-  --shadow-md: 0 12px 32px rgba(0,0,0,0.55);
+  --shadow-sm:0 2px 4px rgba(0,0,0,.4);
+  --shadow-md:0 14px 40px rgba(0,0,0,.55);
 
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 24px;
-  --space-6: 32px;
-  --space-7: 48px;
-  --space-8: 64px;
+  --space-1:4px;
+  --space-2:8px;
+  --space-3:12px;
+  --space-4:16px;
+  --space-5:24px;
+  --space-6:32px;
+  --space-7:48px;
 
-  --font-xs: 12px;
-  --font-sm: 13px;
-  --font-md: 14px;
-  --font-lg: 16px;
-  --font-xl: 20px;
-  --font-xxl: 28px;
+  --font-xs:12px;
+  --font-sm:13px;
+  --font-md:14px;
+  --font-lg:16px;
+  --font-xl:20px;
+  --font-xxl:30px;
 
-  --ease-fast: 120ms ease;
-  --ease-med: 220ms ease;
-  --ease-slow: 380ms ease;
+  --ease:200ms ease;
 }
 
-/* =====================================================================
+/* =========================================================
    RESET
-   ===================================================================== */
+   ========================================================= */
 *,
 *::before,
-*::after {
-  box-sizing: border-box;
+*::after { box-sizing:border-box; }
+
+html,body {
+  margin:0;
+  background:radial-gradient(1000px 600px at 50% -200px,#1a2340,var(--bg-0));
+  color:var(--text-0);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu;
 }
 
-html, body {
-  margin: 0;
-  padding: 0;
-  background: radial-gradient(
-    1200px 800px at 50% -200px,
-    #1a2340,
-    var(--bg-0)
-  );
-  color: var(--text-0);
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell;
-}
+a { text-decoration:none;color:inherit; }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-button, input {
-  font-family: inherit;
-}
-
-/* =====================================================================
-   APP SHELL
-   ===================================================================== */
-#app-root {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
+/* =========================================================
+   LAYOUT
+   ========================================================= */
+#app-root { min-height:100vh; display:flex; flex-direction:column; }
 
 header {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  backdrop-filter: blur(10px);
-  background: linear-gradient(
-    180deg,
-    rgba(14,17,24,0.92),
-    rgba(14,17,24,0.86)
-  );
-  border-bottom: 1px solid var(--border-0);
+  position:sticky; top:0; z-index:10;
+  background:linear-gradient(180deg,rgba(14,17,24,.95),rgba(14,17,24,.88));
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border-0);
 }
 
 .header-inner {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: var(--space-4);
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: var(--space-4);
-  align-items: center;
+  max-width:1280px;
+  margin:auto;
+  padding:var(--space-4);
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:var(--space-4);
+  align-items:center;
 }
 
 .logo {
-  font-size: var(--font-xl);
-  font-weight: 800;
-  letter-spacing: 0.4px;
-  cursor: pointer;
+  font-size:var(--font-xl);
+  font-weight:800;
+  cursor:pointer;
 }
 
-.logo:hover {
-  color: var(--accent-0);
-}
-
-.search {
-  position: relative;
-}
+.logo:hover { color:var(--accent); }
 
 .search input {
-  width: 100%;
-  padding: 12px 14px;
-  background: var(--bg-2);
-  border: 1px solid var(--border-0);
-  border-radius: var(--radius-md);
-  color: var(--text-0);
-  transition: border var(--ease-fast), box-shadow var(--ease-fast);
-}
-
-.search input::placeholder {
-  color: var(--text-3);
+  width:100%;
+  padding:12px 14px;
+  border-radius:var(--radius-md);
+  border:1px solid var(--border-0);
+  background:var(--bg-2);
+  color:var(--text-0);
 }
 
 .search input:focus {
-  outline: none;
-  border-color: var(--accent-0);
-  box-shadow: 0 0 0 1px var(--accent-0);
+  outline:none;
+  border-color:var(--accent);
 }
 
-/* =====================================================================
-   MAIN CONTENT
-   ===================================================================== */
+.header-action {
+  font-size:var(--font-sm);
+  color:var(--text-2);
+  cursor:pointer;
+}
+
+.header-action:hover { color:var(--accent); }
+
 main {
-  flex: 1;
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: var(--space-6) var(--space-4) var(--space-8);
-  width: 100%;
+  max-width:1280px;
+  margin:auto;
+  padding:var(--space-6) var(--space-4) var(--space-7);
+  width:100%;
+  flex:1;
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: var(--space-5);
-}
-
-/* =====================================================================
-   CARD SYSTEM
-   ===================================================================== */
+/* =========================================================
+   COMPONENTS
+   ========================================================= */
 .card {
-  background: linear-gradient(180deg, var(--bg-2), var(--bg-3));
-  border: 1px solid var(--border-0);
-  border-radius: var(--radius-lg);
-  padding: var(--space-5);
-  box-shadow: var(--shadow-sm);
-  transition:
-    transform var(--ease-fast),
-    box-shadow var(--ease-fast),
-    border var(--ease-fast);
+  background:linear-gradient(180deg,var(--bg-2),var(--bg-3));
+  border:1px solid var(--border-0);
+  border-radius:var(--radius-lg);
+  padding:var(--space-5);
+  box-shadow:var(--shadow-sm);
+  transition:box-shadow var(--ease),transform var(--ease);
 }
 
 .card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-  border-color: var(--border-1);
+  transform:translateY(-2px);
+  box-shadow:var(--shadow-md);
 }
 
 .card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: var(--space-3);
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  margin-bottom:var(--space-4);
 }
 
 .card-title {
-  font-size: var(--font-lg);
-  font-weight: 700;
+  font-size:var(--font-lg);
+  font-weight:700;
 }
 
 .card-meta {
-  font-size: var(--font-sm);
-  color: var(--text-3);
+  font-size:var(--font-sm);
+  color:var(--text-3);
 }
 
-/* =====================================================================
-   LISTS / ROWS
-   ===================================================================== */
+.grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(360px,1fr));
+  gap:var(--space-5);
+}
+
 .row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--space-3) 0;
-  border-bottom: 1px solid var(--border-0);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:var(--space-3) 0;
+  border-bottom:1px solid var(--border-0);
 }
 
-.row:last-child {
-  border-bottom: none;
-}
+.row:last-child { border-bottom:none; }
 
-.row.clickable {
-  cursor: pointer;
-  transition: background var(--ease-fast), padding var(--ease-fast);
-}
+.row.clickable { cursor:pointer; }
+.row.clickable:hover { background:rgba(255,255,255,.03); }
 
-.row.clickable:hover {
-  background: rgba(255,255,255,0.03);
-  padding-left: var(--space-2);
-}
-
-/* =====================================================================
-   TABLE
-   ===================================================================== */
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th {
-  text-align: left;
-  font-size: var(--font-xs);
-  color: var(--text-3);
-  padding-bottom: var(--space-2);
-}
-
-td {
-  padding: var(--space-2) 0;
-  font-size: var(--font-md);
-}
-
-/* =====================================================================
+/* =========================================================
    BADGES
-   ===================================================================== */
+   ========================================================= */
 .badge {
-  padding: 2px 10px;
-  border-radius: 999px;
-  font-size: var(--font-xs);
-  font-weight: 700;
+  padding:2px 10px;
+  border-radius:999px;
+  font-size:var(--font-xs);
+  font-weight:700;
 }
 
-.badge.win {
-  background: var(--win-bg);
-  color: var(--win-text);
-}
+.badge.win { background:var(--win-bg); color:var(--win); }
+.badge.loss { background:var(--loss-bg); color:var(--loss); }
 
-.badge.loss {
-  background: var(--loss-bg);
-  color: var(--loss-text);
-}
-
-/* =====================================================================
+/* =========================================================
    STATES
-   ===================================================================== */
+   ========================================================= */
 .state {
-  text-align: center;
-  padding: var(--space-8);
-  color: var(--text-2);
+  text-align:center;
+  padding:var(--space-7);
+  color:var(--text-2);
 }
 
 .spinner {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  border: 4px solid var(--border-0);
-  border-top-color: var(--accent-0);
-  margin: 0 auto var(--space-4);
-  animation: spin 0.9s linear infinite;
+  width:44px;height:44px;
+  border-radius:50%;
+  border:4px solid var(--border-0);
+  border-top-color:var(--accent);
+  margin:0 auto var(--space-4);
+  animation:spin .9s linear infinite;
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
+@keyframes spin { to{transform:rotate(360deg);} }
+
+/* =========================================================
+   PLAYER PROFILE
+   ========================================================= */
+.player-hero {
+  display:grid;
+  grid-template-columns:1fr 2fr;
+  gap:var(--space-6);
 }
 
-/* =====================================================================
-   MATCH DETAILS
-   ===================================================================== */
-.player {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
+.stat-grid {
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:var(--space-4);
 }
 
-.player-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.stat {
+  background:var(--bg-4);
+  border-radius:var(--radius-md);
+  padding:var(--space-4);
+  text-align:center;
 }
 
-.toggle {
-  font-size: var(--font-sm);
-  color: var(--accent-0);
-  cursor: pointer;
+.stat-value {
+  font-size:var(--font-xxl);
+  font-weight:800;
 }
 
-.toggle:hover {
-  text-decoration: underline;
+.stat-label {
+  font-size:var(--font-sm);
+  color:var(--text-3);
+}
+
+/* =========================================================
+   MATCH VIEW
+   ========================================================= */
+.player-block {
+  margin-top:var(--space-4);
 }
 
 .words {
-  display: none;
-  padding-left: var(--space-4);
+  margin-top:var(--space-2);
+  padding-left:var(--space-4);
 }
 
 .words li {
-  font-size: var(--font-sm);
-  color: var(--text-1);
-  padding: 2px 0;
+  font-size:var(--font-sm);
+  color:var(--text-1);
 }
 
-/* =====================================================================
-   TIMELINE
-   ===================================================================== */
-.timeline-item {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-3) 0;
-  border-bottom: 1px solid var(--border-0);
-}
-
-.timeline-item:last-child {
-  border-bottom: none;
-}
-
-.timeline-meta {
-  font-size: var(--font-sm);
-  color: var(--text-3);
-}
-
-/* =====================================================================
+/* =========================================================
    RESPONSIVE
-   ===================================================================== */
-@media (max-width: 760px) {
-  .header-inner {
-    grid-template-columns: 1fr;
-  }
+   ========================================================= */
+@media (max-width:900px) {
+  .player-hero { grid-template-columns:1fr; }
+  .header-inner { grid-template-columns:1fr; }
 }
 </style>
 </head>
 
 <body>
 <div id="app-root">
-  <header>
-    <div class="header-inner">
-      <div class="logo" id="go-home">Game Stats</div>
-      <div class="search">
-        <input id="search-input" placeholder="Search players…" />
-      </div>
+<header>
+  <div class="header-inner">
+    <div class="logo" id="nav-home">Game Stats</div>
+    <div class="search">
+      <input id="search-input" placeholder="Search players…">
     </div>
-  </header>
-  <main id="app"></main>
+    <div class="header-action" id="nav-recent">Recent Games</div>
+  </div>
+</header>
+
+<main id="app"></main>
 </div>
 
 <script>
-/* =====================================================================
-   CONFIG
-   ===================================================================== */
 const API_BASE = "https://tracker-s9qq.onrender.com";
-
-/* =====================================================================
-   ELEMENTS
-   ===================================================================== */
 const app = document.getElementById("app");
+const navHome = document.getElementById("nav-home");
+const navRecent = document.getElementById("nav-recent");
 const searchInput = document.getElementById("search-input");
-const goHome = document.getElementById("go-home");
 
-/* =====================================================================
-   NAVIGATION
-   ===================================================================== */
-goHome.onclick = () => navigate("/");
+navHome.onclick = () => navigate("/");
+navRecent.onclick = () => navigate("/recent");
 
-let searchTimer;
+let timer;
 searchInput.oninput = () => {
-  clearTimeout(searchTimer);
+  clearTimeout(timer);
   const q = searchInput.value.trim();
   if (!q) return;
-  searchTimer = setTimeout(() => {
-    navigate("/search?q=" + encodeURIComponent(q));
-  }, 300);
+  timer = setTimeout(()=>navigate("/search?q="+encodeURIComponent(q)),300);
 };
 
 window.addEventListener("hashchange", router);
 
-/* =====================================================================
-   ROUTER
-   ===================================================================== */
-function router() {
-  const hash = location.hash.slice(1) || "/";
-  const [path, query] = hash.split("?");
+function navigate(p){ location.hash="#"+p; }
 
-  if (path === "/") return loadHome();
-  if (path === "/search") return loadSearch(new URLSearchParams(query).get("q") || "");
-  if (path.startsWith("/player/")) return loadPlayer(decodeURIComponent(path.slice(8)));
-  if (path.startsWith("/match/")) return loadMatch(decodeURIComponent(path.slice(7)));
+function router(){
+  const h=location.hash.slice(1)||"/";
+  const [p,q]=h.split("?");
+  if(p==="/") return home();
+  if(p==="/recent") return recent();
+  if(p==="/search") return search(new URLSearchParams(q).get("q")||"");
+  if(p.startsWith("/player/")) return player(decodeURIComponent(p.slice(8)));
+  if(p.startsWith("/match/")) return match(decodeURIComponent(p.slice(7)));
 }
 
-/* =====================================================================
-   HELPERS
-   ===================================================================== */
-function navigate(path) {
-  location.hash = "#" + path;
+function loading(){
+  app.innerHTML=`<div class="state"><div class="spinner"></div>Loading…</div>`;
 }
-
-function loading() {
-  app.innerHTML = `
-    <div class="state">
-      <div class="spinner"></div>
-      Loading…
-    </div>`;
+function error(){
+  app.innerHTML=`<div class="state">Failed to load data.</div>`;
 }
-
-function error() {
-  app.innerHTML = `<div class="state">Failed to load data.</div>`;
-}
-
-async function fetchJSON(url) {
-  const r = await fetch(url);
-  if (!r.ok) throw new Error();
+async function fetchJSON(u){
+  const r=await fetch(u);
+  if(!r.ok) throw 0;
   return r.json();
 }
 
-/* =====================================================================
-   HOME
-   ===================================================================== */
-async function loadHome() {
+/* ================= HOME ================= */
+async function home(){
   loading();
-  try {
-    const data = await fetchJSON(API_BASE + "/");
-    data.leaderboard.sort((a,b)=>b.wins-a.wins);
-
-    app.innerHTML = `
-      <div class="grid">
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">Leaderboard</div>
-            <div class="card-meta">Wins</div>
-          </div>
-          <table>
-            <thead>
-              <tr>
-                <th>Player</th><th>W</th><th>L</th><th>Games</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${data.leaderboard.map(p=>`
-                <tr class="clickable" data-player="${p.display_name}">
-                  <td>${p.display_name}</td>
-                  <td>${p.wins}</td>
-                  <td>${p.losses}</td>
-                  <td>${p.games_played}</td>
-                </tr>`).join("")}
-            </tbody>
-          </table>
+  try{
+    const d=await fetchJSON(API_BASE+"/");
+    d.leaderboard.sort((a,b)=>b.wins-a.wins);
+    app.innerHTML=`
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Leaderboard</div>
+          <div class="card-meta">Sorted by wins</div>
         </div>
-
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">Recent Matches</div>
-            <div class="card-meta">Latest</div>
-          </div>
-          ${data.recent_matches.map(m=>{
-            const id = m.id || m.match_id;
-            return `<div class="row clickable" data-match="${id}">Match ${id}</div>`;
-          }).join("")}
-        </div>
+        <table>
+          <thead><tr><th>Player</th><th>W</th><th>L</th><th>Games</th></tr></thead>
+          <tbody>
+            ${d.leaderboard.map(p=>`
+              <tr class="row clickable" data-player="${p.display_name}">
+                <td>${p.display_name}</td>
+                <td>${p.wins}</td>
+                <td>${p.losses}</td>
+                <td>${p.games_played}</td>
+              </tr>`).join("")}
+          </tbody>
+        </table>
       </div>`;
-    bindLinks();
-  } catch { error(); }
+    bind();
+  }catch{error();}
 }
 
-/* =====================================================================
-   SEARCH
-   ===================================================================== */
-async function loadSearch(q) {
+/* ================= RECENT ================= */
+async function recent(){
   loading();
-  try {
-    const players = await fetchJSON(API_BASE + "/players?q=" + encodeURIComponent(q));
-    app.innerHTML = `
+  try{
+    const d=await fetchJSON(API_BASE+"/");
+    app.innerHTML=`
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Recent Matches</div>
+        </div>
+        ${d.recent_matches.map(m=>`
+          <div class="row clickable" data-match="${m.id||m.match_id}">
+            Winner: ${m.winner}
+          </div>`).join("")}
+      </div>`;
+    bind();
+  }catch{error();}
+}
+
+/* ================= SEARCH ================= */
+async function search(q){
+  loading();
+  try{
+    const ps=await fetchJSON(API_BASE+"/players?q="+encodeURIComponent(q));
+    app.innerHTML=`
       <div class="card">
         <div class="card-header">
           <div class="card-title">Search</div>
           <div class="card-meta">"${q}"</div>
         </div>
-        ${players.map(p=>`
+        ${ps.map(p=>`
           <div class="row clickable" data-player="${p.name}">
             <strong>${p.name}</strong>
             <span class="card-meta">${p.wins}W ${p.losses}L</span>
           </div>`).join("")}
       </div>`;
-    bindLinks();
-  } catch { error(); }
+    bind();
+  }catch{error();}
 }
 
-/* =====================================================================
-   PLAYER
-   ===================================================================== */
-async function loadPlayer(name) {
+/* ================= PLAYER ================= */
+async function player(name){
   loading();
-  try {
-    const data = await fetchJSON(API_BASE + "/player/" + encodeURIComponent(name));
-    const p = data.profile;
-
-    app.innerHTML = `
+  try{
+    const d=await fetchJSON(API_BASE+"/player/"+encodeURIComponent(name));
+    const p=d.profile;
+    app.innerHTML=`
       <div class="card">
-        <div class="card-header">
-          <div class="card-title">${p.display_name}</div>
-          <div class="card-meta">${p.games_played} games</div>
+        <div class="player-hero">
+          <div>
+            <div class="card-title">${p.display_name}</div>
+            <div class="card-meta">${p.games_played} games played</div>
+          </div>
+          <div class="stat-grid">
+            <div class="stat"><div class="stat-value">${p.wins}</div><div class="stat-label">Wins</div></div>
+            <div class="stat"><div class="stat-value">${p.losses}</div><div class="stat-label">Losses</div></div>
+            <div class="stat"><div class="stat-value">${p.games_played}</div><div class="stat-label">Total Games</div></div>
+            <div class="stat"><div class="stat-value">${p.total_words}</div><div class="stat-label">Total Words</div></div>
+          </div>
         </div>
-        <div class="card-meta">${p.wins}W ${p.losses}L · ${p.total_words} words</div>
       </div>
 
       <div class="card">
         <div class="card-header">
-          <div class="card-title">Timeline</div>
-          <div class="card-meta">History</div>
+          <div class="card-title">Recent Matches</div>
         </div>
-        ${data.timeline.map(t=>`
-          <div class="timeline-item clickable" data-match="${t.match_id}">
+        ${d.timeline.map(t=>`
+          <div class="row clickable" data-match="${t.match_id}">
             <span class="badge ${t.result}">${t.result}</span>
-            <div>
-              <div>Match ${t.match_id}</div>
-              <div class="timeline-meta">${t.ago}</div>
-            </div>
+            <span class="card-meta">${t.ago}</span>
           </div>`).join("")}
       </div>`;
-    bindLinks();
-  } catch { error(); }
+    bind();
+  }catch{error();}
 }
 
-/* =====================================================================
-   MATCH
-   ===================================================================== */
-async function loadMatch(id) {
+/* ================= MATCH ================= */
+async function match(id){
   loading();
-  try {
-    const m = await fetchJSON(API_BASE + "/match/" + encodeURIComponent(id));
-    app.innerHTML = `
+  try{
+    const m=await fetchJSON(API_BASE+"/match/"+encodeURIComponent(id));
+    app.innerHTML=`
       <div class="card">
         <div class="card-header">
-          <div class="card-title">Match ${m.id}</div>
+          <div class="card-title">Match</div>
           <div class="card-meta">Winner: ${m.winner} · ${m.duration_sec}s</div>
         </div>
-      </div>
-
-      ${m.players.map(p=>`
-        <div class="card">
-          <div class="player">
-            <div class="player-head">
-              <div>
-                <strong>${p.name}</strong>
-                <span class="badge ${p.result}">${p.result}</span>
-              </div>
-              <div class="card-meta">${p.word_count} words</div>
-            </div>
-            <div class="toggle">Show words</div>
+        ${m.players.map(p=>`
+          <div class="player-block">
+            <strong>${p.name}</strong>
+            <span class="badge ${p.result}">${p.result}</span>
+            <div class="card-meta">${p.word_count} words</div>
             <ul class="words">
               ${p.words.map(w=>`<li>${w}</li>`).join("")}
             </ul>
-          </div>
-        </div>`).join("")}`;
-
-    document.querySelectorAll(".toggle").forEach(t=>{
-      t.onclick = ()=>{
-        const ul = t.nextElementSibling;
-        const open = ul.style.display === "block";
-        ul.style.display = open ? "none" : "block";
-        t.textContent = open ? "Show words" : "Hide words";
-      };
-    });
-  } catch { error(); }
+          </div>`).join("")}
+      </div>`;
+  }catch{error();}
 }
 
-/* =====================================================================
-   BINDINGS
-   ===================================================================== */
-function bindLinks() {
-  document.querySelectorAll("[data-player]").forEach(el=>{
-    el.onclick = ()=>navigate("/player/" + encodeURIComponent(el.dataset.player));
+/* ================= BIND ================= */
+function bind(){
+  document.querySelectorAll("[data-player]").forEach(e=>{
+    e.onclick=()=>navigate("/player/"+encodeURIComponent(e.dataset.player));
   });
-  document.querySelectorAll("[data-match]").forEach(el=>{
-    el.onclick = ()=>navigate("/match/" + encodeURIComponent(el.dataset.match));
+  document.querySelectorAll("[data-match]").forEach(e=>{
+    e.onclick=()=>navigate("/match/"+encodeURIComponent(e.dataset.match));
   });
 }
 
-/* =====================================================================
-   INIT
-   ===================================================================== */
 router();
 </script>
 </body>
