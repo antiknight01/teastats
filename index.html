@@ -7,17 +7,17 @@
 
 <style>
 /* =========================================================
-   DESIGN SYSTEM
+   DESIGN TOKENS
    ========================================================= */
-:root {
-  --bg-0:#080a0f;
-  --bg-1:#0e1118;
-  --bg-2:#141926;
-  --bg-3:#1c2333;
-  --bg-4:#232b3f;
+:root{
+  --bg-0:#07090e;
+  --bg-1:#0d111a;
+  --bg-2:#141a28;
+  --bg-3:#1b2335;
+  --bg-4:#232d44;
 
-  --border-0:#1f2535;
-  --border-1:#2c3550;
+  --border-0:#1f2740;
+  --border-1:#2d3a5e;
 
   --text-0:#f5f7fb;
   --text-1:#d7dcec;
@@ -25,20 +25,19 @@
   --text-3:#6f7893;
 
   --accent:#4da3ff;
-  --accent-soft:rgba(77,163,255,.15);
+  --accent-glow:rgba(77,163,255,.35);
 
-  --win:#4da3ff;
-  --win-bg:rgba(77,163,255,.18);
-
+  --win:#5fb0ff;
+  --win-bg:rgba(95,176,255,.18);
   --loss:#ff7b7b;
   --loss-bg:rgba(255,123,123,.18);
 
   --radius-sm:8px;
-  --radius-md:12px;
-  --radius-lg:18px;
+  --radius-md:14px;
+  --radius-lg:22px;
 
-  --shadow-sm:0 2px 4px rgba(0,0,0,.4);
-  --shadow-md:0 14px 40px rgba(0,0,0,.55);
+  --shadow-sm:0 4px 10px rgba(0,0,0,.45);
+  --shadow-lg:0 24px 70px rgba(0,0,0,.65);
 
   --space-1:4px;
   --space-2:8px;
@@ -47,15 +46,16 @@
   --space-5:24px;
   --space-6:32px;
   --space-7:48px;
+  --space-8:64px;
 
   --font-xs:12px;
   --font-sm:13px;
-  --font-md:14px;
-  --font-lg:16px;
-  --font-xl:20px;
-  --font-xxl:30px;
+  --font-md:15px;
+  --font-lg:18px;
+  --font-xl:22px;
+  --font-xxl:34px;
 
-  --ease:200ms ease;
+  --ease:220ms cubic-bezier(.4,0,.2,1);
 }
 
 /* =========================================================
@@ -63,31 +63,29 @@
    ========================================================= */
 *,
 *::before,
-*::after { box-sizing:border-box; }
-
-html,body {
+*::after{box-sizing:border-box}
+html,body{
   margin:0;
-  background:radial-gradient(1000px 600px at 50% -200px,#1a2340,var(--bg-0));
+  background:radial-gradient(1200px 700px at 50% -250px,#1c2a55,var(--bg-0));
   color:var(--text-0);
   font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu;
 }
-
-a { text-decoration:none;color:inherit; }
+a{text-decoration:none;color:inherit}
 
 /* =========================================================
-   LAYOUT
+   APP SHELL
    ========================================================= */
-#app-root { min-height:100vh; display:flex; flex-direction:column; }
+#app-root{min-height:100vh;display:flex;flex-direction:column}
 
-header {
-  position:sticky; top:0; z-index:10;
-  background:linear-gradient(180deg,rgba(14,17,24,.95),rgba(14,17,24,.88));
-  backdrop-filter:blur(10px);
+header{
+  position:sticky;top:0;z-index:20;
+  background:linear-gradient(180deg,rgba(13,17,26,.96),rgba(13,17,26,.88));
+  backdrop-filter:blur(12px);
   border-bottom:1px solid var(--border-0);
 }
 
-.header-inner {
-  max-width:1280px;
+.header-inner{
+  max-width:1400px;
   margin:auto;
   padding:var(--space-4);
   display:grid;
@@ -96,158 +94,177 @@ header {
   align-items:center;
 }
 
-.logo {
+.logo{
   font-size:var(--font-xl);
-  font-weight:800;
+  font-weight:900;
+  letter-spacing:.4px;
   cursor:pointer;
 }
+.logo:hover{color:var(--accent)}
 
-.logo:hover { color:var(--accent); }
-
-.search input {
+.search input{
   width:100%;
-  padding:12px 14px;
+  padding:14px 16px;
   border-radius:var(--radius-md);
   border:1px solid var(--border-0);
   background:var(--bg-2);
   color:var(--text-0);
 }
-
-.search input:focus {
+.search input:focus{
   outline:none;
   border-color:var(--accent);
+  box-shadow:0 0 0 2px var(--accent-glow);
 }
 
-.header-action {
+/* =========================================================
+   RECENT BUTTON
+   ========================================================= */
+.recent-btn{
+  padding:12px 18px;
+  border-radius:999px;
   font-size:var(--font-sm);
-  color:var(--text-2);
+  font-weight:700;
+  background:linear-gradient(180deg,var(--accent),#2f78d6);
+  color:#061428;
+  box-shadow:0 0 0 0 rgba(77,163,255,.6);
   cursor:pointer;
+  transition:transform var(--ease),box-shadow var(--ease);
+}
+.recent-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 0 0 6px rgba(77,163,255,.15),0 12px 30px rgba(0,0,0,.6);
 }
 
-.header-action:hover { color:var(--accent); }
-
-main {
-  max-width:1280px;
+/* =========================================================
+   MAIN
+   ========================================================= */
+main{
+  max-width:1400px;
   margin:auto;
-  padding:var(--space-6) var(--space-4) var(--space-7);
   width:100%;
+  padding:var(--space-6) var(--space-4) var(--space-8);
   flex:1;
 }
 
 /* =========================================================
-   COMPONENTS
+   LEADERBOARD (FULL WIDTH)
    ========================================================= */
-.card {
+.leaderboard{
+  width:100%;
   background:linear-gradient(180deg,var(--bg-2),var(--bg-3));
   border:1px solid var(--border-0);
   border-radius:var(--radius-lg);
-  padding:var(--space-5);
-  box-shadow:var(--shadow-sm);
-  transition:box-shadow var(--ease),transform var(--ease);
+  padding:var(--space-6);
+  box-shadow:var(--shadow-lg);
 }
 
-.card:hover {
-  transform:translateY(-2px);
-  box-shadow:var(--shadow-md);
-}
-
-.card-header {
+.lb-header{
   display:flex;
   justify-content:space-between;
   align-items:flex-end;
   margin-bottom:var(--space-4);
 }
 
-.card-title {
-  font-size:var(--font-lg);
-  font-weight:700;
+.lb-title{
+  font-size:var(--font-xxl);
+  font-weight:900;
 }
 
-.card-meta {
+.lb-sub{
   font-size:var(--font-sm);
   color:var(--text-3);
 }
 
-.grid {
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(360px,1fr));
-  gap:var(--space-5);
+table{
+  width:100%;
+  border-collapse:collapse;
 }
 
-.row {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
+th{
+  text-align:left;
+  font-size:var(--font-xs);
+  color:var(--text-3);
+  padding-bottom:var(--space-2);
+}
+
+td{
   padding:var(--space-3) 0;
-  border-bottom:1px solid var(--border-0);
+  font-size:var(--font-md);
 }
 
-.row:last-child { border-bottom:none; }
-
-.row.clickable { cursor:pointer; }
-.row.clickable:hover { background:rgba(255,255,255,.03); }
+tr.clickable{cursor:pointer}
+tr.clickable:hover{background:rgba(255,255,255,.03)}
 
 /* =========================================================
    BADGES
    ========================================================= */
-.badge {
-  padding:2px 10px;
+.badge{
+  padding:3px 12px;
   border-radius:999px;
   font-size:var(--font-xs);
-  font-weight:700;
+  font-weight:800;
 }
-
-.badge.win { background:var(--win-bg); color:var(--win); }
-.badge.loss { background:var(--loss-bg); color:var(--loss); }
+.badge.win{background:var(--win-bg);color:var(--win)}
+.badge.loss{background:var(--loss-bg);color:var(--loss)}
 
 /* =========================================================
-   STATES
+   CARDS
    ========================================================= */
-.state {
-  text-align:center;
-  padding:var(--space-7);
-  color:var(--text-2);
+.card{
+  background:linear-gradient(180deg,var(--bg-2),var(--bg-3));
+  border:1px solid var(--border-0);
+  border-radius:var(--radius-lg);
+  padding:var(--space-6);
+  box-shadow:var(--shadow-sm);
+  margin-top:var(--space-6);
 }
 
-.spinner {
-  width:44px;height:44px;
-  border-radius:50%;
-  border:4px solid var(--border-0);
-  border-top-color:var(--accent);
-  margin:0 auto var(--space-4);
-  animation:spin .9s linear infinite;
+.card-header{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:var(--space-4);
 }
 
-@keyframes spin { to{transform:rotate(360deg);} }
+.card-title{font-size:var(--font-lg);font-weight:800}
+.card-meta{font-size:var(--font-sm);color:var(--text-3)}
 
 /* =========================================================
    PLAYER PROFILE
    ========================================================= */
-.player-hero {
+.player-hero{
   display:grid;
-  grid-template-columns:1fr 2fr;
+  grid-template-columns:1.3fr 2fr;
   gap:var(--space-6);
 }
 
-.stat-grid {
+.player-name{
+  font-size:var(--font-xxl);
+  font-weight:900;
+}
+
+.player-sub{
+  font-size:var(--font-sm);
+  color:var(--text-3);
+  margin-top:var(--space-2);
+}
+
+.stats{
   display:grid;
   grid-template-columns:repeat(2,1fr);
   gap:var(--space-4);
 }
 
-.stat {
+.stat{
   background:var(--bg-4);
   border-radius:var(--radius-md);
   padding:var(--space-4);
   text-align:center;
 }
-
-.stat-value {
+.stat-value{
   font-size:var(--font-xxl);
-  font-weight:800;
+  font-weight:900;
 }
-
-.stat-label {
+.stat-label{
   font-size:var(--font-sm);
   color:var(--text-3);
 }
@@ -255,26 +272,46 @@ main {
 /* =========================================================
    MATCH VIEW
    ========================================================= */
-.player-block {
-  margin-top:var(--space-4);
+.match-meta{
+  display:flex;
+  gap:var(--space-5);
+  font-size:var(--font-sm);
+  color:var(--text-2);
 }
 
-.words {
+.player-block{
+  margin-top:var(--space-5);
+}
+
+.words{
   margin-top:var(--space-2);
   padding-left:var(--space-4);
 }
-
-.words li {
+.words li{
   font-size:var(--font-sm);
   color:var(--text-1);
 }
 
 /* =========================================================
+   STATES
+   ========================================================= */
+.state{text-align:center;padding:var(--space-7);color:var(--text-2)}
+.spinner{
+  width:48px;height:48px;
+  border-radius:50%;
+  border:4px solid var(--border-0);
+  border-top-color:var(--accent);
+  margin:0 auto var(--space-4);
+  animation:spin .9s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* =========================================================
    RESPONSIVE
    ========================================================= */
-@media (max-width:900px) {
-  .player-hero { grid-template-columns:1fr; }
-  .header-inner { grid-template-columns:1fr; }
+@media(max-width:900px){
+  .header-inner{grid-template-columns:1fr}
+  .player-hero{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -284,58 +321,47 @@ main {
 <header>
   <div class="header-inner">
     <div class="logo" id="nav-home">Game Stats</div>
-    <div class="search">
-      <input id="search-input" placeholder="Search players…">
-    </div>
-    <div class="header-action" id="nav-recent">Recent Games</div>
+    <div class="search"><input id="search-input" placeholder="Search players…"></div>
+    <div class="recent-btn" id="nav-recent">Recent Games</div>
   </div>
 </header>
-
 <main id="app"></main>
 </div>
 
 <script>
-const API_BASE = "https://tracker-s9qq.onrender.com";
-const app = document.getElementById("app");
-const navHome = document.getElementById("nav-home");
-const navRecent = document.getElementById("nav-recent");
-const searchInput = document.getElementById("search-input");
+const API_BASE="https://tracker-s9qq.onrender.com";
+const app=document.getElementById("app");
+const navHome=document.getElementById("nav-home");
+const navRecent=document.getElementById("nav-recent");
+const searchInput=document.getElementById("search-input");
 
-navHome.onclick = () => navigate("/");
-navRecent.onclick = () => navigate("/recent");
+navHome.onclick=()=>go("/");
+navRecent.onclick=()=>go("/recent");
 
-let timer;
-searchInput.oninput = () => {
-  clearTimeout(timer);
-  const q = searchInput.value.trim();
-  if (!q) return;
-  timer = setTimeout(()=>navigate("/search?q="+encodeURIComponent(q)),300);
+let t;
+searchInput.oninput=()=>{
+  clearTimeout(t);
+  const q=searchInput.value.trim();
+  if(!q)return;
+  t=setTimeout(()=>go("/search?q="+encodeURIComponent(q)),300);
 };
 
-window.addEventListener("hashchange", router);
+window.addEventListener("hashchange",router);
 
-function navigate(p){ location.hash="#"+p; }
+function go(p){location.hash="#"+p}
+function loading(){app.innerHTML=`<div class="state"><div class="spinner"></div>Loading…</div>`}
+function error(){app.innerHTML=`<div class="state">Failed to load data.</div>`}
+async function fetchJSON(u){const r=await fetch(u);if(!r.ok)throw 0;return r.json()}
 
+/* ================= ROUTER ================= */
 function router(){
   const h=location.hash.slice(1)||"/";
   const [p,q]=h.split("?");
-  if(p==="/") return home();
-  if(p==="/recent") return recent();
-  if(p==="/search") return search(new URLSearchParams(q).get("q")||"");
-  if(p.startsWith("/player/")) return player(decodeURIComponent(p.slice(8)));
-  if(p.startsWith("/match/")) return match(decodeURIComponent(p.slice(7)));
-}
-
-function loading(){
-  app.innerHTML=`<div class="state"><div class="spinner"></div>Loading…</div>`;
-}
-function error(){
-  app.innerHTML=`<div class="state">Failed to load data.</div>`;
-}
-async function fetchJSON(u){
-  const r=await fetch(u);
-  if(!r.ok) throw 0;
-  return r.json();
+  if(p==="/")home();
+  else if(p==="/recent")recent();
+  else if(p==="/search")search(new URLSearchParams(q).get("q")||"");
+  else if(p.startsWith("/player/"))player(decodeURIComponent(p.slice(8)));
+  else if(p.startsWith("/match/"))match(decodeURIComponent(p.slice(7)));
 }
 
 /* ================= HOME ================= */
@@ -345,16 +371,16 @@ async function home(){
     const d=await fetchJSON(API_BASE+"/");
     d.leaderboard.sort((a,b)=>b.wins-a.wins);
     app.innerHTML=`
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">Leaderboard</div>
-          <div class="card-meta">Sorted by wins</div>
+      <section class="leaderboard">
+        <div class="lb-header">
+          <div class="lb-title">Leaderboard</div>
+          <div class="lb-sub">Ranked by wins</div>
         </div>
         <table>
-          <thead><tr><th>Player</th><th>W</th><th>L</th><th>Games</th></tr></thead>
+          <thead><tr><th>Player</th><th>Wins</th><th>Losses</th><th>Games</th></tr></thead>
           <tbody>
             ${d.leaderboard.map(p=>`
-              <tr class="row clickable" data-player="${p.display_name}">
+              <tr class="clickable" data-player="${p.display_name}">
                 <td>${p.display_name}</td>
                 <td>${p.wins}</td>
                 <td>${p.losses}</td>
@@ -362,9 +388,9 @@ async function home(){
               </tr>`).join("")}
           </tbody>
         </table>
-      </div>`;
+      </section>`;
     bind();
-  }catch{error();}
+  }catch{error()}
 }
 
 /* ================= RECENT ================= */
@@ -379,11 +405,11 @@ async function recent(){
         </div>
         ${d.recent_matches.map(m=>`
           <div class="row clickable" data-match="${m.id||m.match_id}">
-            Winner: ${m.winner}
+            Winner: <strong>${m.winner}</strong>
           </div>`).join("")}
       </div>`;
     bind();
-  }catch{error();}
+  }catch{error()}
 }
 
 /* ================= SEARCH ================= */
@@ -404,7 +430,7 @@ async function search(q){
           </div>`).join("")}
       </div>`;
     bind();
-  }catch{error();}
+  }catch{error()}
 }
 
 /* ================= PLAYER ================= */
@@ -417,10 +443,10 @@ async function player(name){
       <div class="card">
         <div class="player-hero">
           <div>
-            <div class="card-title">${p.display_name}</div>
-            <div class="card-meta">${p.games_played} games played</div>
+            <div class="player-name">${p.display_name}</div>
+            <div class="player-sub">${p.games_played} games played</div>
           </div>
-          <div class="stat-grid">
+          <div class="stats">
             <div class="stat"><div class="stat-value">${p.wins}</div><div class="stat-label">Wins</div></div>
             <div class="stat"><div class="stat-value">${p.losses}</div><div class="stat-label">Losses</div></div>
             <div class="stat"><div class="stat-value">${p.games_played}</div><div class="stat-label">Total Games</div></div>
@@ -431,7 +457,7 @@ async function player(name){
 
       <div class="card">
         <div class="card-header">
-          <div class="card-title">Recent Matches</div>
+          <div class="card-title">Recent Games</div>
         </div>
         ${d.timeline.map(t=>`
           <div class="row clickable" data-match="${t.match_id}">
@@ -440,7 +466,7 @@ async function player(name){
           </div>`).join("")}
       </div>`;
     bind();
-  }catch{error();}
+  }catch{error()}
 }
 
 /* ================= MATCH ================= */
@@ -451,8 +477,12 @@ async function match(id){
     app.innerHTML=`
       <div class="card">
         <div class="card-header">
-          <div class="card-title">Match</div>
-          <div class="card-meta">Winner: ${m.winner} · ${m.duration_sec}s</div>
+          <div class="card-title">Match Details</div>
+          <div class="match-meta">
+            <div>Winner: <strong>${m.winner}</strong></div>
+            <div>Duration: <strong>${m.duration_sec}s</strong></div>
+            <div>Played: ${new Date(m.played_at).toLocaleString()}</div>
+          </div>
         </div>
         ${m.players.map(p=>`
           <div class="player-block">
@@ -464,16 +494,16 @@ async function match(id){
             </ul>
           </div>`).join("")}
       </div>`;
-  }catch{error();}
+  }catch{error()}
 }
 
 /* ================= BIND ================= */
 function bind(){
   document.querySelectorAll("[data-player]").forEach(e=>{
-    e.onclick=()=>navigate("/player/"+encodeURIComponent(e.dataset.player));
+    e.onclick=()=>go("/player/"+encodeURIComponent(e.dataset.player));
   });
   document.querySelectorAll("[data-match]").forEach(e=>{
-    e.onclick=()=>navigate("/match/"+encodeURIComponent(e.dataset.match));
+    e.onclick=()=>go("/match/"+encodeURIComponent(e.dataset.match));
   });
 }
 
