@@ -1,351 +1,189 @@
-// =========================================================
-// Configuration & Utilities
-// =========================================================
+const BASE = "https://tracker-s9qq.onrender.com";
+const app = document.getElementById("app");
+const search = document.getElementById("searchInput");
+const results = document.getElementById("searchResults");
+const logo = document.getElementById("logo");
 
-const BASE_URL = "https://tracker-s9qq.onrender.com"; // Use your actual backend URL
+const cache = new Map();
+const scrollPositions = {};
+let activeIndex = -1;
 
-const content = document.getElementById('content');
-const searchInput = document.getElementById('search-input');
-const searchResultsContainer = document.getElementById('search-results');
-
-/**
- * Utility function for making API calls.
- * @param {string} endpoint - The API path (e.g., '/', '/player/name').
- * @returns {Promise<Object|Array|null>} The parsed JSON data or null on error.
- */
-async function fetchData(endpoint) {
-    try {
-        const response = await fetch(`${BASE_URL}${endpoint}`);
-        if (!response.ok) {
-            console.error(`HTTP error! status: ${response.status} for ${endpoint}`);
-            // Display a user-friendly error message on the main content area
-            content.innerHTML = `<div class="error-message">Error fetching data from server for ${endpoint}. Status: ${response.status}</div>`;
-            return null; // Defensive check
-        }
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.error('Fetch failed:', error);
-        content.innerHTML = `<div class="error-message">Network error: Could not connect to the backend at ${BASE_URL}</div>`;
-        return null; // Defensive check
-    }
+/* ---------------- API ---------------- */
+async function api(path) {
+  if (cache.has(path)) return cache.get(path);
+  const res = await fetch(BASE + path);
+  if (!res.ok) throw new Error("API failure");
+  const data = await res.json();
+  cache.set(path, data);
+  return data;
 }
 
-/**
- * Converts seconds to a user-friendly duration string (Xm Ys).
- * @param {number} totalSeconds
- * @returns {string}
- */
-function formatDuration(totalSeconds) {
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    return `${minutes}m ${seconds}s`;
+/* ---------------- ROUTING ---------------- */
+function go(path) {
+  scrollPositions[location.pathname] = window.scrollY;
+  history.pushState({}, "", path);
+  router();
 }
 
-// =========================================================
-// Routing
-// =========================================================
+window.onpopstate = router;
+logo.onclick = () => go("/");
 
-/**
- * Handles all client-side navigation.
- * @param {string} url - The new URL path (e.g., '/', '/player/JohnDoe').
- * @param {boolean} [doPushState=true] - Whether to use history.pushState.
- */
-function router(url, doPushState = true) {
-    if (doPushState) {
-        history.pushState(null, '', url);
-    }
-    
-    // Clear old content and show loading state
-    content.innerHTML = '<p class="loading-message">Loading content...</p>';
-    
-    const path = url.split('?')[0]; // Ignore query params for path matching
-    const urlParams = new URLSearchParams(url.split('?')[1] || '');
-
-    if (path === '/') {
-        renderHomePage();
-    } else if (path.startsWith('/player/')) {
-        const playerName = path.substring('/player/'.length);
-        renderPlayerPage(playerName);
-    } else if (path.startsWith('/match/')) {
-        const matchId = path.substring('/match/'.length);
-        renderMatchPage(matchId);
-    } else {
-        content.innerHTML = '<div class="empty-state"><h3>404 Not Found</h3><p>The requested page does not exist.</p></div>';
-    }
+/* ---------------- SKELETON ---------------- */
+function skeleton(count = 4) {
+  app.innerHTML = "";
+  for (let i = 0; i < count; i++) {
+    const s = document.createElement("div");
+    s.className = "skeleton";
+    app.appendChild(s);
+  }
 }
 
-/**
- * Intercepts clicks on internal links (links with data-route attribute or specific classes)
- */
-function attachRouteListeners() {
-    document.body.addEventListener('click', (e) => {
-        // Find the closest ancestor <a> tag
-        let link = e.target.closest('a[data-route]');
-        if (link) {
-            // Internal link clicked
-            const href = link.getAttribute('href');
-            if (href.startsWith('/')) { // Only handle internal paths
-                e.preventDefault(); // Stop default browser navigation
-                router(href);
-            }
-        }
+/* ---------------- ROUTER ---------------- */
+async function router() {
+  const path = location.pathname;
+  results.innerHTML = "";
+  activeIndex = -1;
+
+  try {
+    skeleton();
+    if (path === "/") await home();
+    else if (path.startsWith("/player/"))
+      await player(decodeURIComponent(path.split("/player/")[1]));
+    else if (path.startsWith("/match/"))
+      await match(path.split("/match/")[1]);
+
+    window.scrollTo(0, scrollPositions[path] || 0);
+  } catch {
+    app.innerHTML = `<div class="muted">Failed to load.</div>`;
+  }
+}
+
+/* ---------------- HOME ---------------- */
+async function home() {
+  const d = await api("/");
+  app.innerHTML = "";
+
+  const lb = document.createElement("div");
+  lb.className = "section";
+  lb.innerHTML = "<h2>Leaderboard</h2>";
+
+  [...d.leaderboard]
+    .sort((a, b) => b.wins - a.wins)
+    .forEach(p => {
+      const c = document.createElement("div");
+      c.className = "card flex";
+      c.innerHTML = `<strong>${p.display_name}</strong><span>${p.wins} wins</span>`;
+      c.onclick = () => go(`/player/${encodeURIComponent(p.display_name)}`);
+      lb.appendChild(c);
     });
+
+  const rm = document.createElement("div");
+  rm.className = "section";
+  rm.innerHTML = "<h2>Recent Matches</h2>";
+
+  d.recent_matches.forEach(m => {
+    const c = document.createElement("div");
+    c.className = "card";
+    c.textContent = m.id;
+    c.onclick = () => go(`/match/${m.id}`);
+    rm.appendChild(c);
+  });
+
+  app.append(lb, rm);
 }
 
-// Listen for back/forward button presses
-window.addEventListener('popstate', () => {
-    router(location.pathname + location.search, false); // Do not push state again
+/* ---------------- SEARCH ---------------- */
+search.addEventListener("keydown", e => {
+  if (e.key === "Escape") {
+    results.innerHTML = "";
+    search.value = "";
+  }
 });
 
+search.addEventListener("input", async () => {
+  const q = search.value.trim();
+  results.innerHTML = "";
+  if (!q) return;
 
-// =========================================================
-// Page Rendering Functions
-// =========================================================
-
-/**
- * Renders the Home Page: Leaderboard and Recent Matches.
- */
-async function renderHomePage() {
-    const data = await fetchData('/');
-    if (!data) return; // Error handled by fetchData
-
-    const { leaderboard, recent_matches } = data;
-    
-    // 1. Sort Leaderboard: MOST WINS (descending)
-    const sortedLeaderboard = (leaderboard || [])
-        .sort((a, b) => b.wins - a.wins)
-        .slice(0, 10); // Limit to top 10 for cleaner display
-
-    let html = '';
-
-    // --- Leaderboard Section ---
-    html += `
-        <section class="card" id="leaderboard-section">
-            <h2 class="section-title">🏆 Top Players Leaderboard</h2>
-            ${sortedLeaderboard.length === 0 
-                ? '<div class="empty-state">No leaderboard data available.</div>'
-                : `<ul class="data-list">
-                    ${sortedLeaderboard.map((player, index) => `
-                        <li class="data-list-item" data-route>
-                            <span class="leaderboard-rank">#${index + 1}</span>
-                            <a href="/player/${player.display_name}" data-route class="leaderboard-name">${player.display_name}</a>
-                            <span class="leaderboard-wins">${player.wins} Wins</span>
-                        </li>
-                    `).join('')}
-                </ul>`}
-        </section>
-    `;
-
-    // --- Recent Matches Section ---
-    html += `
-        <section class="card" id="recent-matches-section">
-            <h2 class="section-title">⏱️ Recent Matches</h2>
-            ${(recent_matches || []).length === 0 
-                ? '<div class="empty-state">No recent matches found.</div>'
-                : `<ul class="data-list">
-                    ${(recent_matches || []).map(match => `
-                        <li class="data-list-item" data-route>
-                            <a href="/match/${match.id}" data-route>Match ID: ${match.id}</a>
-                            <span>Winner: <span class="match-winner">${match.winner}</span></span>
-                            <span>Played: ${new Date(match.played_at).toLocaleDateString()}</span>
-                            <span>Duration: ${formatDuration(match.duration_sec)}</span>
-                        </li>
-                    `).join('')}
-                </ul>`}
-        </section>
-    `;
-
-    content.innerHTML = html;
-}
-
-/**
- * Renders the Player Profile Page.
- * @param {string} name - The display_name of the player.
- */
-async function renderPlayerPage(name) {
-    const data = await fetchData(`/player/${name}`);
-    if (!data) return;
-
-    const { profile, timeline } = data;
-
-    if (!profile) {
-        content.innerHTML = `<div class="empty-state"><h3>Player Not Found</h3><p>Could not load profile for player: ${name}.</p></div>`;
-        return;
-    }
-
-    // --- Profile Stats Card ---
-    let html = `
-        <header class="match-detail-header">
-            <h2>👤 Player Profile: ${profile.display_name}</h2>
-        </header>
-        
-        <section class="card profile-stats-card">
-            <div class="profile-stats">
-                <div class="stat-box">
-                    <div class="stat-value">${profile.games_played}</div>
-                    <div class="stat-label">Games Played</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value">${profile.wins}</div>
-                    <div class="stat-label">Wins</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value">${profile.losses}</div>
-                    <div class="stat-label">Losses</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value">${profile.total_words}</div>
-                    <div class="stat-label">Total Words Used</div>
-                </div>
-            </div>
-        </section>
-    `;
-
-    // --- Timeline Section ---
-    html += `
-        <section class="card" id="timeline-section">
-            <h2 class="section-title">📜 Lifetime Match Timeline</h2>
-            ${(timeline || []).length === 0
-                ? '<div class="empty-state">No match history found for this player.</div>'
-                : `<ul class="data-list timeline-list">
-                    ${(timeline || []).map(item => `
-                        <li class="timeline-item" data-route>
-                            <a href="/match/${item.match_id}" data-route>Match ID: ${item.match_id}</a>
-                            <span class="timeline-item-status match-${item.result}">${item.result.toUpperCase()}</span>
-                            <span class="timeline-item-ago">${item.ago}</span>
-                        </li>
-                    `).join('')}
-                </ul>`}
-        </section>
-    `;
-
-    content.innerHTML = html;
-}
-
-/**
- * Renders the Match Detail Page.
- * @param {string} matchId - The ID of the match.
- */
-async function renderMatchPage(matchId) {
-    const match = await fetchData(`/match/${matchId}`);
-    if (!match) return;
-
-    // Defensive check for structure
-    if (!match.id || !match.players) {
-        content.innerHTML = `<div class="empty-state"><h3>Match Data Incomplete</h3><p>Match ID ${matchId} has missing required data.</p></div>`;
-        return;
-    }
-
-    // --- Match Header ---
-    let html = `
-        <header class="match-detail-header">
-            <h2>🎮 Match ${match.id}</h2>
-            <p>Played at: ${new Date(match.played_at).toLocaleString()}</p>
-            <p>Duration: **${formatDuration(match.duration_sec)}**</p>
-            <p>Winner: <span class="match-winner">${match.winner}</span></p>
-        </header>
-        
-        <section class="card">
-            <h3 class="section-title">Players & Statistics</h3>
-            <div class="player-match-stats">
-                ${match.players.map(player => `
-                    <div class="card player-card ${player.result === 'win' ? 'winner' : ''}">
-                        <h4>
-                            <a href="/player/${player.name}" data-route>${player.name}</a>
-                            <span class="match-status match-${player.result}">${player.result.toUpperCase()}</span>
-                        </h4>
-                        <p>Words Used: **${player.word_count}**</p>
-                        
-                        <button class="word-list-toggle" data-player-words="${player.name}">
-                            Show Words Used (${player.words ? player.words.length : 0})
-                        </button>
-                        
-                        <ul class="word-list" id="words-${player.name}">
-                            ${(player.words || []).map(word => `<li>${word}</li>`).join('')}
-                        </ul>
-                    </div>
-                `).join('')}
-            </div>
-        </section>
-    `;
-
-    content.innerHTML = html;
-    
-    // Attach listener for word expansion
-    document.querySelectorAll('.word-list-toggle').forEach(button => {
-        button.addEventListener('click', (e) => {
-            const playerName = e.target.getAttribute('data-player-words');
-            const wordList = document.getElementById(`words-${playerName}`);
-            
-            if (wordList) {
-                const isHidden = wordList.style.display === 'none' || wordList.style.display === '';
-                wordList.style.display = isHidden ? 'flex' : 'none'; // 'flex' for inline-block wrapping
-                e.target.textContent = isHidden 
-                    ? `Hide Words Used (${player.words ? player.words.length : 0})` 
-                    : `Show Words Used (${player.words ? player.words.length : 0})`;
-            }
-        });
-    });
-}
-
-
-// =========================================================
-// Search Functionality
-// =========================================================
-
-let searchTimeout;
-
-/**
- * Handles the search API call and result rendering.
- */
-async function handleSearch() {
-    const query = searchInput.value.trim();
-    if (query.length < 2) {
-        searchResultsContainer.innerHTML = '';
-        searchResultsContainer.style.display = 'none';
-        return;
-    }
-
-    const results = await fetchData(`/search?q=${query}`);
-    
-    if (!results || results.length === 0) {
-        searchResultsContainer.innerHTML = '<div class="empty-state" style="padding: 10px;">No players found.</div>';
-    } else {
-        searchResultsContainer.innerHTML = results.map(player => `
-            <a href="/player/${player.display_name}" class="search-result-item" data-route>
-                ${player.display_name} (${player.wins} Wins)
-            </a>
-        `).join('');
-    }
-    searchResultsContainer.style.display = 'block';
-}
-
-// Event listener for search input with debounce
-searchInput.addEventListener('input', () => {
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(handleSearch, 300); // Debounce for 300ms
+  const r = await api(`/search?q=${encodeURIComponent(q)}`);
+  r.forEach((p, i) => {
+    const d = document.createElement("div");
+    d.className = "search-item";
+    d.textContent = p.display_name;
+    d.onclick = () => go(`/player/${encodeURIComponent(p.display_name)}`);
+    results.appendChild(d);
+  });
 });
 
-// Hide search results when clicking outside
-document.addEventListener('click', (e) => {
-    if (!searchResultsContainer.contains(e.target) && e.target !== searchInput) {
-        searchResultsContainer.style.display = 'none';
-    }
-});
+/* ---------------- PLAYER ---------------- */
+async function player(name) {
+  const d = await api(`/player/${encodeURIComponent(name)}`);
+  app.innerHTML = "";
 
+  const h = document.createElement("div");
+  h.className = "section";
+  h.innerHTML = `
+    <h2>${d.profile.display_name}</h2>
+    <div class="muted">
+      Games ${d.profile.games_played} · Wins ${d.profile.wins}
+      · Losses ${d.profile.losses} · Words ${d.profile.total_words}
+    </div>`;
 
-// =========================================================
-// Initialization
-// =========================================================
+  const t = document.createElement("div");
+  t.className = "section";
+  t.innerHTML = "<h3>Timeline</h3>";
 
-/**
- * Initial setup on page load.
- */
-function init() {
-    attachRouteListeners(); // Make all internal links work with the router
-    router(location.pathname + location.search, false); // Load the initial page based on URL
+  d.timeline.forEach(m => {
+    const c = document.createElement("div");
+    c.className = "card flex";
+    c.innerHTML = `
+      <span>${m.match_id}</span>
+      <span class="badge ${m.result}">${m.result}</span>
+      <span class="muted">${m.ago}</span>`;
+    c.onclick = () => go(`/match/${m.match_id}`);
+    t.appendChild(c);
+  });
+
+  app.append(h, t);
 }
 
-init();
-       
+/* ---------------- MATCH ---------------- */
+async function match(id) {
+  const m = await api(`/match/${id}`);
+  app.innerHTML = "";
+
+  const h = document.createElement("div");
+  h.className = "section";
+  h.innerHTML = `
+    <h2>${m.id}</h2>
+    <div class="muted">
+      Winner ${m.winner} ·
+      ${Math.floor(m.duration_sec / 60)}m ${m.duration_sec % 60}s
+    </div>`;
+
+  const p = document.createElement("div");
+  p.className = "section";
+  p.innerHTML = "<h3>Players</h3>";
+
+  m.players.forEach(pl => {
+    const c = document.createElement("div");
+    c.className = "card";
+    c.innerHTML = `
+      <div class="flex">
+        <strong>${pl.name}</strong>
+        <span class="badge ${pl.result}">${pl.result}</span>
+      </div>
+      <div class="muted">Words: ${pl.word_count}</div>
+      <div class="toggle">Toggle words</div>
+      <div class="words">${pl.words.join(", ")}</div>
+    `;
+    c.querySelector(".toggle").onclick = () =>
+      c.querySelector(".words").classList.toggle("open");
+    p.appendChild(c);
+  });
+
+  app.append(h, p);
+}
+
+/* ---------------- INIT ---------------- */
+router();
