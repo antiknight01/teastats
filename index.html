@@ -243,10 +243,9 @@ main{
 }
 /* ===== Improved Leaderboard Cards ===== */
 .lb-card{
-  min-height:120px;                 /* was 160px */
-  display:flex;
-  flex-direction:column;
-  justify-content:space-between;
+  min-height:auto;
+  padding:18px 20px;
+}
 
   background:linear-gradient(180deg,#141c3a,#1a2450);
   border:1px solid var(--border);
@@ -269,6 +268,29 @@ main{
   letter-spacing:.4px;
   color:#ffd36b; /* gold accent */
   text-shadow:0 0 12px rgba(255,211,107,.35);
+}
+
+.lb-name-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.lb-name{
+  font-size:18px;
+  font-weight:900;
+  letter-spacing:.4px;
+  color:#ffd36b;
+}
+
+.lb-winrate-inline{
+  font-size:13px;
+  font-weight:800;
+  color:var(--accent-2);
+  padding:4px 10px;
+  border-radius:999px;
+  background:rgba(107,178,255,.12);
+  border:1px solid rgba(107,178,255,.25);
 }
 
 .lb-winrate{
@@ -385,6 +407,7 @@ main{
 }
 .badge.win{background:rgba(127,196,255,.22);color:var(--win)}
 .badge.loss{background:rgba(255,139,139,.22);color:var(--loss)}
+
 
 /* =========================================================
    PROFILE
@@ -627,7 +650,11 @@ async function home(){
     return;
   }
 
-  d.leaderboard.sort((a,b)=>b.wins-a.wins);
+d.leaderboard.sort((a,b)=>{
+  const wa = a.games_played ? a.wins / a.games_played : 0;
+  const wb = b.games_played ? b.wins / b.games_played : 0;
+  return wb - wa;
+});
 
   app.innerHTML = `
     ${renderSearch()}
@@ -639,20 +666,20 @@ async function home(){
     <div class="card">
       <div class="card-title">Leaderboard</div>
       <div class="lb-grid">
-        ${d.leaderboard.map(p=>`
+        ${d.leaderboard.map((p,i)=>`
           <div class="lb-card" onclick="go('/player/${encodeURIComponent(p.display_name)}')">
   <div class="lb-top">
-    <div class="lb-name">
-      ${p.display_name}
+    <div class="lb-name-row">
+      <span class="lb-name">
+        ${i === 0 ? "👑 " : ""}${p.display_name}
+      </span>
+      <span class="lb-winrate-inline">
+        ${(p.games_played
+          ? ((p.wins / p.games_played) * 100).toFixed(1)
+          : "0.0")}%
+      </span>
     </div>
     <div class="lb-arrow">→</div>
-  </div>
-
-  <div class="lb-winrate">
-    ${(p.games_played
-      ? ((p.wins / p.games_played) * 100).toFixed(1)
-      : "0.0")}%
-    <span>Win Rate</span>
   </div>
 </div>
         `).join("")}
