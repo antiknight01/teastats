@@ -271,6 +271,24 @@ main{
   text-shadow:0 0 12px rgba(255,211,107,.35);
 }
 
+.lb-winrate{
+  margin-top:8px;
+  font-size:20px;
+  font-weight:900;
+  color:var(--accent-2);
+  letter-spacing:.3px;
+}
+
+.lb-winrate span{
+  display:block;
+  font-size:11px;
+  font-weight:700;
+  color:var(--dim);
+  letter-spacing:.6px;
+  text-transform:uppercase;
+}
+
+
 .lb-top{
   display:flex;
   justify-content:space-between;
@@ -623,16 +641,20 @@ async function home(){
       <div class="lb-grid">
         ${d.leaderboard.map(p=>`
           <div class="lb-card" onclick="go('/player/${encodeURIComponent(p.display_name)}')">
-            <div class="lb-top">
-              <div class="lb-name">${p.display_name}</div>
-              <div class="lb-arrow">→</div>
-            </div>
-            <div class="lb-metrics">
-              <div class="lb-metric"><div class="lb-value">${p.wins}</div><div class="lb-label">Wins</div></div>
-              <div class="lb-metric"><div class="lb-value">${p.losses}</div><div class="lb-label">Losses</div></div>
-              <div class="lb-metric"><div class="lb-value">${p.games_played}</div><div class="lb-label">Games</div></div>
-            </div>
-          </div>
+  <div class="lb-top">
+    <div class="lb-name">
+      ${p.display_name}
+    </div>
+    <div class="lb-arrow">→</div>
+  </div>
+
+  <div class="lb-winrate">
+    ${(p.games_played
+      ? ((p.wins / p.games_played) * 100).toFixed(1)
+      : "0.0")}%
+    <span>Win Rate</span>
+  </div>
+</div>
         `).join("")}
       </div>
     </div>`;
