@@ -410,7 +410,6 @@ main{
   animation:pop var(--fast) var(--ease) both;
 }
 
-
 .chart{
   margin-top:24px;
 }
@@ -522,7 +521,7 @@ main{
 /* =========================================================
    CORE APP LOGIC
    ========================================================= */
-const API="https://tracker-s9qq.onrender.com";
+const API="<PUT_MY_BACKEND_URL_HERE>";
 const app=document.getElementById("app");
 
 window.addEventListener("hashchange",router);
@@ -530,9 +529,14 @@ window.addEventListener("hashchange",router);
 function go(p){location.hash="#"+p}
 function dur(sec){return sec<60?sec+"s":(sec/60).toFixed(1)+" min"}
 async function j(u){
-  const r=await fetch(u);
-  if(!r.ok) throw new Error();
-  return r.json();
+  const r = await fetch(u).catch(() => null);
+  if (!r) return null;
+  if (!r.ok) return null;
+  try {
+    return await r.json();
+  } catch {
+    return null;
+  }
 }
 
 /* =========================================================
@@ -585,10 +589,20 @@ function router(){
    HOME
    ========================================================= */
 async function home(){
-  const d=await j(API+"/");
+  const d = await j(API + "/");
+
+  if (!d) {
+    app.innerHTML = `
+      <div class="card">
+        <div class="card-title">Backend unavailable</div>
+        <div class="muted">Please wait a moment and refresh.</div>
+      </div>`;
+    return;
+  }
+
   d.leaderboard.sort((a,b)=>b.wins-a.wins);
 
-  app.innerHTML=`
+  app.innerHTML = `
     ${renderSearch()}
 
     <div class="home-actions">
@@ -600,30 +614,20 @@ async function home(){
       <div class="lb-grid">
         ${d.leaderboard.map(p=>`
           <div class="lb-card" onclick="go('/player/${encodeURIComponent(p.display_name)}')">
-  <div class="lb-top">
-    <div class="lb-name">${p.display_name}</div>
-    <div class="lb-arrow">→</div>
-  </div>
-
-  <div class="lb-metrics">
-    <div class="lb-metric">
-      <div class="lb-value">${p.wins}</div>
-      <div class="lb-label">Wins</div>
-    </div>
-    <div class="lb-metric">
-      <div class="lb-value">${p.losses}</div>
-      <div class="lb-label">Losses</div>
-    </div>
-    <div class="lb-metric">
-      <div class="lb-value">${p.games_played}</div>
-      <div class="lb-label">Games</div>
-    </div>
-  </div>
-</div>
+            <div class="lb-top">
+              <div class="lb-name">${p.display_name}</div>
+              <div class="lb-arrow">→</div>
+            </div>
+            <div class="lb-metrics">
+              <div class="lb-metric"><div class="lb-value">${p.wins}</div><div class="lb-label">Wins</div></div>
+              <div class="lb-metric"><div class="lb-value">${p.losses}</div><div class="lb-label">Losses</div></div>
+              <div class="lb-metric"><div class="lb-value">${p.games_played}</div><div class="lb-label">Games</div></div>
+            </div>
+          </div>
+        `).join("")}
       </div>
     </div>`;
 }
-
 /* =========================================================
    RECENT
    ========================================================= */
