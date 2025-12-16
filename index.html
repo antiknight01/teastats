@@ -5,229 +5,480 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>☕ Blacktea Stats</title>
 
+<!-- =========================================================
+     ELITE, FINAL, ALL-FEATURES SINGLE-PAGE FRONTEND
+     Vanilla HTML + CSS + JS
+     ========================================================= -->
+
 <style>
-/* ======================================================
-   DESIGN SYSTEM (STABLE)
-   ====================================================== */
+/* =========================================================
+   RESET & VARIABLES
+   ========================================================= */
 :root{
   --bg:#0b1020;
+  --bg-soft:#0f1530;
   --panel:#121833;
   --panel-2:#171f42;
+  --panel-3:#1d2655;
   --border:#2a3470;
 
   --text:#f7f9ff;
   --muted:#aeb6df;
+  --dim:#7e87b8;
 
   --accent:#6bb2ff;
+  --accent-2:#8fc6ff;
+  --accent-glow:rgba(107,178,255,.35);
+
   --win:#7fc4ff;
   --loss:#ff8b8b;
 
+  --radius-xs:10px;
   --radius:16px;
-  --radius-lg:22px;
+  --radius-lg:24px;
+  --radius-xl:32px;
 
-  --shadow:0 16px 40px rgba(0,0,0,.45);
-  --ease:280ms cubic-bezier(.22,.61,.36,1);
+  --shadow-sm:0 6px 20px rgba(0,0,0,.25);
+  --shadow:0 16px 50px rgba(0,0,0,.45);
+  --shadow-lg:0 30px 80px rgba(0,0,0,.65);
+
+  --ease:cubic-bezier(.22,.61,.36,1);
+  --fast:180ms;
+  --mid:320ms;
+  --slow:520ms;
 }
 
-*{box-sizing:border-box}
-html,body{
+*{
+  box-sizing:border-box;
   margin:0;
-  background:var(--bg);
+  padding:0;
+}
+
+html,body{
+  width:100%;
+  min-height:100%;
+  background:linear-gradient(180deg,#0b1020,#090d1a 60%);
   color:var(--text);
   font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto;
+  -webkit-font-smoothing:antialiased;
 }
 
-/* ======================================================
-   HEADER
-   ====================================================== */
+a{text-decoration:none;color:inherit}
+button{font-family:inherit}
+
+/* =========================================================
+   GLOBAL ANIMATIONS
+   ========================================================= */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(16px)}
+  to{opacity:1;transform:none}
+}
+@keyframes fade{
+  from{opacity:0}
+  to{opacity:1}
+}
+@keyframes pop{
+  from{opacity:0;transform:scale(.9)}
+  to{opacity:1;transform:none}
+}
+@keyframes shimmer{
+  0%{background-position:-200% 0}
+  100%{background-position:200% 0}
+}
+
+/* =========================================================
+   HEADER (BRANDING ONLY)
+   ========================================================= */
 header{
   position:sticky;
   top:0;
-  z-index:50;
+  z-index:100;
   background:rgba(11,16,32,.92);
-  backdrop-filter:blur(12px);
+  backdrop-filter:blur(14px);
   border-bottom:1px solid var(--border);
 }
 .header-inner{
-  max-width:1400px;
+  max-width:1600px;
   margin:auto;
-  padding:22px;
-  font-size:26px;
+  padding:26px 28px;
+  font-size:28px;
   font-weight:900;
+  letter-spacing:.5px;
 }
 
-/* ======================================================
-   MAIN
-   ====================================================== */
+/* =========================================================
+   MAIN LAYOUT
+   ========================================================= */
 main{
-  max-width:1400px;
+  max-width:1600px;
   margin:auto;
-  padding:48px 22px 120px;
-  animation:fade .4s ease both;
-}
-@keyframes fade{
-  from{opacity:0;transform:translateY(14px)}
-  to{opacity:1;transform:none}
+  padding:56px 28px 140px;
+  animation:fadeUp var(--mid) var(--ease) both;
 }
 
-/* ======================================================
+/* =========================================================
    GENERIC UI
-   ====================================================== */
+   ========================================================= */
 .card{
-  background:var(--panel);
+  background:linear-gradient(180deg,var(--panel),var(--panel-2));
   border:1px solid var(--border);
-  border-radius:var(--radius-lg);
-  padding:28px;
-  margin-bottom:36px;
+  border-radius:var(--radius-xl);
+  padding:34px;
+  margin-bottom:44px;
   box-shadow:var(--shadow);
+  animation:fadeUp var(--mid) var(--ease) both;
 }
 .card-title{
-  font-size:22px;
+  font-size:24px;
   font-weight:900;
-  margin-bottom:20px;
+  margin-bottom:24px;
+  letter-spacing:.3px;
 }
-.muted{color:var(--muted);font-size:13px}
+.muted{color:var(--muted);font-size:14px}
+.dim{color:var(--dim);font-size:13px}
+
 .back{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
   color:var(--accent);
   font-weight:800;
   cursor:pointer;
-  margin-bottom:18px;
-  display:inline-block;
+  margin-bottom:24px;
+  transition:var(--fast) var(--ease);
+}
+.back:hover{
+  transform:translateX(-4px);
+  text-shadow:0 0 12px var(--accent-glow);
 }
 
-/* ======================================================
-   HOME
-   ====================================================== */
-.home-actions{
-  display:flex;
-  justify-content:flex-end;
-  margin-bottom:26px;
-}
 .btn{
-  padding:12px 20px;
+  padding:14px 26px;
   border-radius:999px;
+  border:none;
+  background:linear-gradient(180deg,var(--accent-2),var(--accent));
+  color:#061428;
+  font-weight:900;
+  cursor:pointer;
+  transition:var(--fast) var(--ease);
+}
+.btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 0 0 10px rgba(107,178,255,.18),var(--shadow-lg);
+}
+
+/* =========================================================
+   SEARCH (GOOGLE-STYLE)
+   ========================================================= */
+.search-wrap{
+  max-width:720px;
+  margin:0 auto 56px;
+  position:relative;
+  animation:fadeUp var(--mid) var(--ease) both;
+}
+.search-input{
+  width:100%;
+  padding:20px 26px;
+  border-radius:999px;
+  border:1px solid var(--border);
+  background:linear-gradient(180deg,var(--panel),var(--panel-2));
+  color:var(--text);
+  font-size:17px;
+}
+.search-input:focus{
+  outline:none;
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px var(--accent-glow);
+}
+.search-btn{
+  position:absolute;
+  right:8px;
+  top:8px;
+  bottom:8px;
+  padding:0 26px;
+  border-radius:999px;
+  border:none;
   background:var(--accent);
   color:#071427;
   font-weight:900;
   cursor:pointer;
 }
+.search-results{
+  position:absolute;
+  top:112%;
+  width:100%;
+  background:linear-gradient(180deg,var(--panel-2),var(--panel-3));
+  border:1px solid var(--border);
+  border-radius:22px;
+  overflow:hidden;
+  box-shadow:var(--shadow);
+  animation:fade var(--fast) var(--ease) both;
+  z-index:20;
+}
+.search-item{
+  padding:16px 22px;
+  cursor:pointer;
+  transition:var(--fast) var(--ease);
+}
+.search-item:hover{
+  background:rgba(255,255,255,.06);
+}
 
-/* ======================================================
-   LEADERBOARD
-   ====================================================== */
+/* =========================================================
+   HOME ACTIONS
+   ========================================================= */
+.home-actions{
+  display:flex;
+  justify-content:flex-end;
+  margin-bottom:30px;
+}
+
+/* =========================================================
+   LEADERBOARD (CARD GRID)
+   ========================================================= */
 .lb-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
-  gap:18px;
+  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:22px;
 }
 .lb-card{
-  background:var(--panel-2);
+  background:linear-gradient(180deg,var(--panel-2),var(--panel-3));
   border:1px solid var(--border);
-  border-radius:var(--radius);
-  padding:22px;
+  border-radius:var(--radius-lg);
+  padding:26px;
   cursor:pointer;
-  transition:var(--ease);
+  transition:var(--mid) var(--ease);
+  position:relative;
+  overflow:hidden;
+}
+.lb-card::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(120deg,transparent,rgba(255,255,255,.06),transparent);
+  background-size:200% 100%;
+  opacity:0;
+}
+.lb-card:hover::after{
+  opacity:1;
+  animation:shimmer 1.2s linear;
 }
 .lb-card:hover{
-  transform:translateY(-6px);
-  box-shadow:var(--shadow);
+  transform:translateY(-8px);
+  box-shadow:var(--shadow-lg);
+  border-color:var(--accent);
 }
-.lb-name{font-size:18px;font-weight:900}
+.lb-name{
+  font-size:20px;
+  font-weight:900;
+  margin-bottom:10px;
+}
 .lb-stats{
-  margin-top:8px;
   display:flex;
-  gap:14px;
-  font-size:13px;
+  gap:18px;
+  font-size:14px;
   color:var(--muted);
 }
 
-/* ======================================================
+/* =========================================================
+   MATCH ROWS & MATCH CARD
+   ========================================================= */
+.row{
+  display:grid;
+  grid-template-columns:1fr auto auto;
+  gap:18px;
+  padding:22px;
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  margin-bottom:18px;
+  cursor:pointer;
+  background:linear-gradient(180deg,var(--panel-2),var(--panel-3));
+  transition:var(--mid) var(--ease);
+}
+.row:hover{
+  transform:translateY(-6px);
+  box-shadow:var(--shadow);
+}
+
+.match-hero{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:22px;
+  align-items:center;
+  margin-bottom:26px;
+}
+.match-title{
+  font-size:26px;
+  font-weight:900;
+}
+.match-meta{
+  text-align:right;
+}
+.player-block{
+  margin-top:28px;
+  padding-top:22px;
+  border-top:1px solid var(--border);
+}
+.player-header{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  font-weight:800;
+}
+.badge{
+  padding:6px 16px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:900;
+}
+.badge.win{background:rgba(127,196,255,.22);color:var(--win)}
+.badge.loss{background:rgba(255,139,139,.22);color:var(--loss)}
+
+/* =========================================================
    PROFILE
-   ====================================================== */
+   ========================================================= */
 .profile-hero{
   display:grid;
-  grid-template-columns:1.4fr 2fr;
-  gap:26px;
+  grid-template-columns:1.4fr 2.6fr;
+  gap:36px;
 }
 .profile-name{
-  font-size:30px;
+  font-size:36px;
   font-weight:900;
 }
 .stats{
   display:grid;
   grid-template-columns:repeat(4,1fr);
-  gap:14px;
+  gap:18px;
 }
 .stat{
-  background:var(--panel-2);
+  background:linear-gradient(180deg,var(--panel-2),var(--panel-3));
   border-radius:var(--radius);
-  padding:18px;
+  padding:20px;
   text-align:center;
+  animation:pop var(--fast) var(--ease) both;
 }
 .stat-value{
-  font-size:24px;
+  font-size:26px;
   font-weight:900;
 }
 .stat-label{
   font-size:12px;
   color:var(--muted);
 }
-.compare-btn{
-  margin-top:18px;
-  display:inline-block;
-  padding:12px 20px;
-  border-radius:999px;
-  background:var(--accent);
-  color:#071427;
-  font-weight:900;
-  cursor:pointer;
-}
 
-/* ======================================================
-   ROWS
-   ====================================================== */
-.row{
-  display:grid;
-  grid-template-columns:1fr auto auto;
-  gap:16px;
-  padding:18px;
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  margin-bottom:14px;
-  cursor:pointer;
-}
-.row:hover{background:#1a2350}
-
-/* ======================================================
-   WORDS
-   ====================================================== */
+/* =========================================================
+   WORDS & ANALYTICS
+   ========================================================= */
 .words{
   display:flex;
   flex-wrap:wrap;
   gap:10px;
+  margin-top:16px;
 }
 .word{
-  padding:6px 14px;
+  padding:8px 16px;
   border-radius:999px;
-  background:#1e285a;
+  background:linear-gradient(180deg,var(--panel-3),#22306b);
+  border:1px solid var(--border);
+  font-size:13px;
+  animation:pop var(--fast) var(--ease) both;
+}
+
+.chart{
+  margin-top:24px;
+}
+.bar{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin-bottom:12px;
+}
+.bar-label{
+  width:110px;
+  font-size:12px;
+  color:var(--muted);
+}
+.bar-track{
+  flex:1;
+  height:14px;
+  background:#1b2455;
+  border-radius:999px;
+  overflow:hidden;
+}
+.bar-fill{
+  height:100%;
+  background:linear-gradient(90deg,var(--accent),var(--accent-2));
+  border-radius:999px;
+  animation:fade var(--fast) var(--ease) both;
+}
+.bar-count{
+  width:40px;
+  text-align:right;
   font-size:12px;
 }
 
-/* ======================================================
+/* =========================================================
    COMPARE
-   ====================================================== */
+   ========================================================= */
 .compare-grid{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:24px;
+  gap:32px;
 }
 .compare-card{
-  background:var(--panel-2);
-  border-radius:var(--radius);
-  padding:22px;
+  background:linear-gradient(180deg,var(--panel-2),var(--panel-3));
+  border-radius:var(--radius-lg);
+  padding:28px;
 }
 
-@media(max-width:900px){
+/* =========================================================
+   MODAL
+   ========================================================= */
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.6);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:200;
+  animation:fade var(--fast) var(--ease) both;
+}
+.modal-box{
+  background:linear-gradient(180deg,var(--panel),var(--panel-2));
+  border-radius:var(--radius-xl);
+  padding:30px;
+  width:460px;
+  box-shadow:var(--shadow-lg);
+}
+.modal-title{
+  font-size:22px;
+  font-weight:900;
+  margin-bottom:16px;
+}
+.modal input{
+  width:100%;
+  padding:14px;
+  border-radius:14px;
+  border:1px solid var(--border);
+  background:var(--panel-2);
+  color:var(--text);
+}
+.modal-list{
+  margin-top:14px;
+}
+.modal-item{
+  padding:12px;
+  cursor:pointer;
+  border-radius:10px;
+}
+.modal-item:hover{background:rgba(255,255,255,.06)}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+@media(max-width:1100px){
   .profile-hero,.compare-grid{grid-template-columns:1fr}
   .stats{grid-template-columns:repeat(2,1fr)}
 }
@@ -242,20 +493,53 @@ main{
 <main id="app"></main>
 
 <script>
-const API="https://tracker-s9qq.onrender.com";
+/* =========================================================
+   CORE APP LOGIC
+   ========================================================= */
+const API="<PUT_MY_BACKEND_URL_HERE>";
 const app=document.getElementById("app");
 
 window.addEventListener("hashchange",router);
+
 function go(p){location.hash="#"+p}
 function dur(sec){return sec<60?sec+"s":(sec/60).toFixed(1)+" min"}
-
 async function j(u){
   const r=await fetch(u);
-  if(!r.ok)throw 0;
+  if(!r.ok) throw new Error();
   return r.json();
 }
 
-/* ================= ROUTER ================= */
+/* =========================================================
+   SEARCH
+   ========================================================= */
+let sTimer;
+function renderSearch(){
+  return `
+    <div class="search-wrap">
+      <input class="search-input" placeholder="Search players…" oninput="onSearch(this.value)">
+      <button class="search-btn">Search</button>
+      <div id="search-results"></div>
+    </div>`;
+}
+async function onSearch(q){
+  clearTimeout(sTimer);
+  const box=document.getElementById("search-results");
+  if(!q){box.innerHTML="";return;}
+  sTimer=setTimeout(async()=>{
+    const ps=await j(API+"/players?q="+encodeURIComponent(q));
+    box.innerHTML=`
+      <div class="search-results">
+        ${ps.map(p=>`
+          <div class="search-item" onclick="go('/player/${encodeURIComponent(p.name)}')">
+            ${p.name}
+          </div>`).join("")}
+      </div>`;
+  },200);
+}
+
+/* =========================================================
+   ROUTER
+   ========================================================= */
 function router(){
   const h=location.hash.slice(1)||"/";
   if(h==="/")home();
@@ -268,14 +552,18 @@ function router(){
   }
 }
 
-/* ================= HOME ================= */
+/* =========================================================
+   HOME
+   ========================================================= */
 async function home(){
   const d=await j(API+"/");
   d.leaderboard.sort((a,b)=>b.wins-a.wins);
 
   app.innerHTML=`
+    ${renderSearch()}
+
     <div class="home-actions">
-      <div class="btn" onclick="go('/recent')">Recent Games</div>
+      <button class="btn" onclick="go('/recent')">Recent Games</button>
     </div>
 
     <div class="card">
@@ -294,7 +582,9 @@ async function home(){
     </div>`;
 }
 
-/* ================= RECENT ================= */
+/* =========================================================
+   RECENT
+   ========================================================= */
 async function recent(){
   const d=await j(API+"/");
   app.innerHTML=`
@@ -305,18 +595,22 @@ async function recent(){
         <div class="row" onclick="go('/match/${m.id||m.match_id}')">
           <div><strong>${m.winner}</strong> won</div>
           <div class="muted">${dur(m.duration_sec||0)}</div>
-          <div class="muted">View</div>
+          <div class="muted">Open</div>
         </div>`).join("")}
     </div>`;
 }
 
-/* ================= PLAYER ================= */
+/* =========================================================
+   PLAYER PROFILE
+   ========================================================= */
 async function player(name){
   const d=await j(API+"/player/"+encodeURIComponent(name));
 
-  let totalSeconds=0, words=[];
-  let bestWin=0, curWin=0, curLoss=0;
-  let currentStreak={type:null,count:0};
+  let totalSeconds=0;
+  let words=[];
+  let bestWin=0;
+  let curWin=0,curLoss=0;
+  let current={type:null,count:0};
 
   for(const id of d.profile.matches){
     const m=await j(API+"/match/"+id);
@@ -327,12 +621,13 @@ async function player(name){
 
   d.timeline.forEach(t=>{
     if(t.result==="win"){
-      curWin++; curLoss=0;
+      curWin++;curLoss=0;
       bestWin=Math.max(bestWin,curWin);
+      current={type:"Win",count:curWin};
     }else{
-      curLoss++; curWin=0;
+      curLoss++;curWin=0;
+      current={type:"Loss",count:curLoss};
     }
-    currentStreak={type:t.result,count:t.result==="win"?curWin:curLoss};
   });
 
   app.innerHTML=`
@@ -342,8 +637,10 @@ async function player(name){
       <div class="profile-hero">
         <div>
           <div class="profile-name">${d.profile.display_name}</div>
-          <div class="muted">${d.profile.games_played} games · ${dur(totalSeconds)}</div>
-          <div class="compare-btn" onclick="openCompare('${d.profile.display_name}')">
+          <div class="muted">
+            ${d.profile.games_played} games · ${dur(totalSeconds)} total playtime
+          </div>
+          <div class="btn" style="margin-top:18px" onclick="openCompare('${d.profile.display_name}')">
             Compare Player
           </div>
         </div>
@@ -351,13 +648,10 @@ async function player(name){
         <div class="stats">
           <div class="stat"><div class="stat-value">${d.profile.wins}</div><div class="stat-label">Wins</div></div>
           <div class="stat"><div class="stat-value">${d.profile.losses}</div><div class="stat-label">Losses</div></div>
-          <div class="stat"><div class="stat-value">${d.profile.games_played}</div><div class="stat-label">Games</div></div>
-          <div class="stat"><div class="stat-value">${words.length}</div><div class="stat-label">Words</div></div>
+          <div class="stat"><div class="stat-value">${d.profile.games_played}</div><div class="stat-label">Total Games</div></div>
+          <div class="stat"><div class="stat-value">${words.length}</div><div class="stat-label">Total Words</div></div>
           <div class="stat"><div class="stat-value">${bestWin}</div><div class="stat-label">Best Win Streak</div></div>
-          <div class="stat">
-            <div class="stat-value">${currentStreak.count}</div>
-            <div class="stat-label">Current ${currentStreak.type}</div>
-          </div>
+          <div class="stat"><div class="stat-value">${current.count}</div><div class="stat-label">Current ${current.type}</div></div>
         </div>
       </div>
     </div>
@@ -373,7 +667,31 @@ async function player(name){
     </div>`;
 }
 
-/* ================= COMPARE ================= */
+/* =========================================================
+   COMPARE MODAL & VIEW
+   ========================================================= */
+async function openCompare(a){
+  const ps=await j(API+"/players?q=");
+  document.body.insertAdjacentHTML("beforeend",`
+    <div class="modal" onclick="this.remove()">
+      <div class="modal-box" onclick="event.stopPropagation()">
+        <div class="modal-title">Compare ${a} with…</div>
+        <input placeholder="Search player…" oninput="filterCompare(this.value)">
+        <div class="modal-list">
+          ${ps.filter(p=>p.name!==a).map(p=>`
+            <div class="modal-item" onclick="go('/compare/${encodeURIComponent(a)}|${encodeURIComponent(p.name)}')">
+              ${p.name}
+            </div>`).join("")}
+        </div>
+      </div>
+    </div>`);
+}
+function filterCompare(q){
+  document.querySelectorAll(".modal-item").forEach(i=>{
+    i.style.display=i.textContent.toLowerCase().includes(q.toLowerCase())?"block":"none";
+  });
+}
+
 async function compare(a,b){
   const A=await j(API+"/player/"+a);
   const B=await j(API+"/player/"+b);
@@ -391,6 +709,7 @@ async function compare(a,b){
 
   const da=await collect(A);
   const db=await collect(B);
+
   const shared=[...new Set(da.words.filter(w=>db.words.includes(w)))];
 
   app.innerHTML=`
@@ -414,26 +733,64 @@ function compareCard(p,d){
   const wr=(p.profile.wins/p.profile.games_played*100).toFixed(1);
   return `
     <div class="compare-card">
-      <strong>${p.profile.display_name}</strong>
+      <div class="profile-name">${p.profile.display_name}</div>
       <div class="muted">${p.profile.games_played} games</div>
       <div class="muted">${p.profile.wins}W · ${p.profile.losses}L · ${wr}% WR</div>
-      <div class="muted">${dur(d.seconds)} played</div>
-      <div class="muted">${d.words.length} words</div>
+      <div class="muted">${dur(d.seconds)} playtime</div>
+      <div class="muted">${d.words.length} total words</div>
+      ${wordChart(d.words)}
     </div>`;
 }
 
-/* ================= MATCH ================= */
+function wordChart(words){
+  const freq={};
+  words.forEach(w=>freq[w]=(freq[w]||0)+1);
+  const entries=Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const max=Math.max(...entries.map(e=>e[1]),1);
+
+  return `
+    <div class="chart">
+      ${entries.map(([w,c])=>`
+        <div class="bar">
+          <div class="bar-label">${w}</div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:${(c/max)*100}%"></div>
+          </div>
+          <div class="bar-count">${c}</div>
+        </div>`).join("")}
+    </div>`;
+}
+
+/* =========================================================
+   MATCH VIEW
+   ========================================================= */
 async function match(id){
   const m=await j(API+"/match/"+id);
   app.innerHTML=`
     <div class="back" onclick="history.back()">← Back</div>
+
     <div class="card">
-      <div class="card-title">${m.winner} won</div>
-      <div class="muted">${dur(m.duration_sec)}</div>
+      <div class="match-hero">
+        <div>
+          <div class="match-title">${m.winner} won the match</div>
+          <div class="dim">Match ID · ${m.id}</div>
+        </div>
+        <div class="match-meta">
+          <div class="muted">${dur(m.duration_sec)}</div>
+          <div class="dim">${new Date(m.played_at).toLocaleString()}</div>
+        </div>
+      </div>
+
       ${m.players.map(p=>`
-        <div style="margin-top:16px">
-          <strong>${p.name}</strong>
-          <div class="words">${p.words.map(w=>`<div class="word">${w}</div>`).join("")}</div>
+        <div class="player-block">
+          <div class="player-header">
+            ${p.name}
+            <span class="badge ${p.result}">${p.result}</span>
+            <span class="dim">${p.word_count} words</span>
+          </div>
+          <div class="words">
+            ${p.words.map(w=>`<div class="word">${w}</div>`).join("")}
+          </div>
         </div>`).join("")}
     </div>`;
 }
@@ -441,4 +798,4 @@ async function match(id){
 router();
 </script>
 </body>
-   </html>
+</html>   
