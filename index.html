@@ -241,45 +241,70 @@ main{
   grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
   gap:22px;
 }
+/* ===== Improved Leaderboard Cards ===== */
 .lb-card{
+  min-height:160px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+
   background:linear-gradient(180deg,var(--panel-2),var(--panel-3));
   border:1px solid var(--border);
   border-radius:var(--radius-lg);
-  padding:26px;
+  padding:28px;
+
   cursor:pointer;
   transition:var(--mid) var(--ease);
-  position:relative;
-  overflow:hidden;
 }
-.lb-card::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:linear-gradient(120deg,transparent,rgba(255,255,255,.06),transparent);
-  background-size:200% 100%;
-  opacity:0;
-}
-.lb-card:hover::after{
-  opacity:1;
-  animation:shimmer 1.2s linear;
-}
+
 .lb-card:hover{
   transform:translateY(-8px);
   box-shadow:var(--shadow-lg);
   border-color:var(--accent);
 }
-.lb-name{
-  font-size:20px;
-  font-weight:900;
-  margin-bottom:10px;
-}
-.lb-stats{
+
+.lb-top{
   display:flex;
-  gap:18px;
-  font-size:14px;
-  color:var(--muted);
+  justify-content:space-between;
+  align-items:center;
 }
 
+.lb-arrow{
+  font-size:22px;
+  font-weight:900;
+  color:var(--accent);
+  opacity:.7;
+  transition:transform var(--fast) var(--ease);
+}
+
+.lb-card:hover .lb-arrow{
+  transform:translateX(6px);
+  opacity:1;
+}
+
+.lb-metrics{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  margin-top:18px;
+}
+
+.lb-metric{
+  background:rgba(0,0,0,.18);
+  border-radius:12px;
+  padding:10px;
+  text-align:center;
+}
+
+.lb-value{
+  font-size:20px;
+  font-weight:900;
+}
+
+.lb-label{
+  font-size:11px;
+  color:var(--muted);
+}
 /* =========================================================
    MATCH ROWS & MATCH CARD
    ========================================================= */
@@ -384,6 +409,7 @@ main{
   font-size:13px;
   animation:pop var(--fast) var(--ease) both;
 }
+
 
 .chart{
   margin-top:24px;
@@ -517,7 +543,10 @@ function renderSearch(){
   return `
     <div class="search-wrap">
       <input class="search-input" placeholder="Search players…" oninput="onSearch(this.value)">
-      <button class="search-btn">Search</button>
+      <button class="search-btn"
+  onclick="onSearch(document.querySelector('.search-input').value)">
+  Search
+</button>
       <div id="search-results"></div>
     </div>`;
 }
@@ -571,13 +600,26 @@ async function home(){
       <div class="lb-grid">
         ${d.leaderboard.map(p=>`
           <div class="lb-card" onclick="go('/player/${encodeURIComponent(p.display_name)}')">
-            <div class="lb-name">${p.display_name}</div>
-            <div class="lb-stats">
-              <span>${p.wins}W</span>
-              <span>${p.losses}L</span>
-              <span>${p.games_played} games</span>
-            </div>
-          </div>`).join("")}
+  <div class="lb-top">
+    <div class="lb-name">${p.display_name}</div>
+    <div class="lb-arrow">→</div>
+  </div>
+
+  <div class="lb-metrics">
+    <div class="lb-metric">
+      <div class="lb-value">${p.wins}</div>
+      <div class="lb-label">Wins</div>
+    </div>
+    <div class="lb-metric">
+      <div class="lb-value">${p.losses}</div>
+      <div class="lb-label">Losses</div>
+    </div>
+    <div class="lb-metric">
+      <div class="lb-value">${p.games_played}</div>
+      <div class="lb-label">Games</div>
+    </div>
+  </div>
+</div>
       </div>
     </div>`;
 }
@@ -798,4 +840,4 @@ async function match(id){
 router();
 </script>
 </body>
-</html>   
+</html>     
