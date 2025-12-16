@@ -6,260 +6,220 @@
 <title>Game Stats</title>
 
 <style>
-/* ============================
-   ELITE DESIGN SYSTEM vFINAL
-   ============================ */
+/* =========================================================
+   CANVAS & SYSTEM
+   ========================================================= */
 :root{
-  --bg-0:#05070c;
-  --bg-1:#0b1020;
-  --bg-2:#111a33;
-  --bg-3:#18224a;
-  --bg-4:#1f2c5c;
+  --bg:#0b1020;
+  --panel:#121833;
+  --panel-2:#171f42;
+  --border:#2a3470;
 
-  --border:#2e3b75;
-
-  --text:#f9fbff;
+  --text:#f7f9ff;
   --muted:#aeb6df;
   --dim:#7e87b8;
 
   --accent:#6bb2ff;
-  --accent-strong:#8ac4ff;
-  --accent-glow:rgba(107,178,255,.35);
-
   --win:#7fc4ff;
   --loss:#ff8b8b;
 
-  --radius-sm:12px;
-  --radius-md:18px;
-  --radius-lg:28px;
+  --radius:16px;
+  --radius-lg:22px;
 
-  --shadow-soft:0 12px 40px rgba(0,0,0,.45);
-  --shadow-hard:0 40px 120px rgba(0,0,0,.75);
-
-  --ease:320ms cubic-bezier(.22,.61,.36,1);
+  --shadow:0 12px 30px rgba(0,0,0,.35);
+  --ease:280ms cubic-bezier(.22,.61,.36,1);
 }
 
 *{box-sizing:border-box}
 html,body{
   margin:0;
-  background:radial-gradient(1600px 900px at 50% -350px,#2b3c88,var(--bg-0));
+  background:var(--bg);
   color:var(--text);
   font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto;
 }
 a{text-decoration:none;color:inherit}
 
-/* ================= HEADER ================= */
+/* =========================================================
+   HEADER
+   ========================================================= */
 header{
-  position:sticky;
-  top:0;
-  z-index:100;
-  backdrop-filter:blur(18px);
-  background:linear-gradient(180deg,rgba(6,10,24,.96),rgba(6,10,24,.86));
+  position:sticky;top:0;z-index:10;
+  background:#0b1020cc;
+  backdrop-filter:blur(10px);
   border-bottom:1px solid var(--border);
 }
 .header-inner{
-  max-width:1600px;
+  max-width:1400px;
   margin:auto;
-  padding:22px 26px;
+  padding:18px 22px;
   display:grid;
   grid-template-columns:auto 1fr auto;
-  gap:22px;
+  gap:20px;
   align-items:center;
 }
 .logo{
-  font-size:24px;
+  font-size:22px;
   font-weight:900;
   cursor:pointer;
 }
-.logo:hover{
-  color:var(--accent-strong);
-  text-shadow:0 0 18px var(--accent-glow);
-}
+.logo:hover{color:var(--accent)}
 .search input{
   width:100%;
-  padding:16px 20px;
-  border-radius:16px;
+  padding:14px 18px;
+  border-radius:14px;
   border:1px solid var(--border);
-  background:linear-gradient(180deg,var(--bg-2),var(--bg-3));
+  background:var(--panel);
   color:var(--text);
 }
 .recent-btn{
-  padding:16px 26px;
+  padding:14px 22px;
   border-radius:999px;
   font-weight:900;
-  background:linear-gradient(180deg,var(--accent-strong),var(--accent));
-  color:#061428;
+  background:var(--accent);
+  color:#081427;
   cursor:pointer;
-  transition:var(--ease);
-}
-.recent-btn:hover{
-  transform:translateY(-3px);
-  box-shadow:0 0 0 10px rgba(107,178,255,.18),var(--shadow-hard);
 }
 
-/* ================= MAIN ================= */
+/* =========================================================
+   MAIN
+   ========================================================= */
 main{
-  max-width:1600px;
+  max-width:1400px;
   margin:auto;
-  padding:56px 26px 120px;
+  padding:36px 22px 100px;
 }
 
-/* ================= GLOBAL ================= */
+/* =========================================================
+   GENERIC
+   ========================================================= */
 .back{
-  display:inline-flex;
-  gap:10px;
-  font-weight:900;
-  color:var(--accent-strong);
+  color:var(--accent);
+  font-weight:800;
+  margin-bottom:20px;
   cursor:pointer;
-  margin-bottom:26px;
+  display:inline-block;
 }
 .card{
-  background:linear-gradient(180deg,var(--bg-2),var(--bg-3));
+  background:var(--panel);
   border:1px solid var(--border);
   border-radius:var(--radius-lg);
-  padding:38px;
-  box-shadow:var(--shadow-soft);
-  margin-bottom:44px;
-  animation:fadeUp .45s ease both;
-}
-@keyframes fadeUp{
-  from{opacity:0;transform:translateY(16px)}
-  to{opacity:1;transform:none}
+  padding:28px;
+  margin-bottom:28px;
 }
 .card-title{
-  font-size:28px;
+  font-size:22px;
   font-weight:900;
-  margin-bottom:26px;
+  margin-bottom:18px;
 }
-.muted{color:var(--muted);font-size:14px}
+.muted{color:var(--muted);font-size:13px}
 
-/* ================= LEADERBOARD ================= */
-.leaderboard-grid{
+/* =========================================================
+   LEADERBOARD
+   ========================================================= */
+.lb-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
-  gap:22px;
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:18px;
 }
-.player-card{
-  background:linear-gradient(180deg,var(--bg-3),var(--bg-4));
+.lb-card{
+  background:var(--panel-2);
   border:1px solid var(--border);
-  border-radius:22px;
-  padding:26px;
+  border-radius:var(--radius);
+  padding:22px;
   cursor:pointer;
   transition:var(--ease);
-  position:relative;
 }
-.player-card:hover{
-  transform:translateY(-6px);
-  box-shadow:var(--shadow-soft);
-  border-color:var(--accent);
+.lb-card:hover{
+  transform:translateY(-4px);
+  box-shadow:var(--shadow);
 }
-.player-name{
-  font-size:20px;
-  font-weight:900;
-  margin-bottom:8px;
-}
-.player-stats{
+.lb-name{font-size:18px;font-weight:900}
+.lb-stats{
+  margin-top:8px;
   display:flex;
-  gap:18px;
-  font-size:14px;
+  gap:14px;
+  font-size:13px;
   color:var(--muted);
 }
-.player-arrow{
-  position:absolute;
-  right:22px;
-  top:50%;
-  transform:translateY(-50%);
-  font-weight:900;
-  color:var(--accent);
-}
 
-/* ================= MATCH ROW ================= */
+/* =========================================================
+   ROWS (MATCHES)
+   ========================================================= */
 .row{
   display:grid;
   grid-template-columns:1fr auto auto;
-  gap:22px;
-  padding:26px;
-  border-radius:22px;
+  gap:16px;
+  padding:18px;
   border:1px solid var(--border);
-  margin-bottom:18px;
+  border-radius:var(--radius);
+  margin-bottom:14px;
   cursor:pointer;
-  transition:var(--ease);
 }
-.row:hover{
-  transform:translateY(-4px);
-  box-shadow:var(--shadow-soft);
-}
+.row:hover{background:#1a2350}
 
-/* ================= BADGES ================= */
+/* =========================================================
+   BADGES
+   ========================================================= */
 .badge{
-  padding:6px 16px;
+  padding:4px 12px;
   border-radius:999px;
   font-size:12px;
   font-weight:900;
 }
-.badge.win{background:rgba(127,196,255,.22);color:var(--win)}
-.badge.loss{background:rgba(255,139,139,.22);color:var(--loss)}
+.badge.win{background:#243c66;color:var(--win)}
+.badge.loss{background:#4a2b2b;color:var(--loss)}
 
-/* ================= PROFILE ================= */
+/* =========================================================
+   PROFILE
+   ========================================================= */
 .player-hero{
   display:grid;
-  grid-template-columns:1.2fr 2.2fr;
-  gap:48px;
+  grid-template-columns:1.2fr 2fr;
+  gap:26px;
 }
 .stats{
   display:grid;
   grid-template-columns:repeat(3,1fr);
-  gap:22px;
+  gap:14px;
 }
 .stat{
-  background:linear-gradient(180deg,var(--bg-3),var(--bg-4));
-  border-radius:22px;
-  padding:28px;
+  background:var(--panel-2);
+  border-radius:var(--radius);
+  padding:20px;
   text-align:center;
   cursor:pointer;
-  transition:var(--ease);
 }
-.stat:hover{
-  transform:translateY(-4px);
-  box-shadow:0 0 0 1px var(--accent);
-}
-.stat-value{font-size:34px;font-weight:900}
-.stat-label{font-size:13px;color:var(--muted)}
+.stat:hover{background:#202a5f}
+.stat-value{font-size:28px;font-weight:900}
+.stat-label{font-size:12px;color:var(--muted)}
 
-/* ================= WORD CLOUD ================= */
-.words{
-  display:flex;
-  flex-wrap:wrap;
-  gap:12px;
-}
+/* =========================================================
+   WORD ANALYTICS
+   ========================================================= */
+.words{display:flex;flex-wrap:wrap;gap:8px}
 .word{
-  padding:10px 18px;
+  padding:6px 12px;
   border-radius:999px;
-  background:linear-gradient(180deg,var(--bg-3),var(--bg-4));
-  border:1px solid var(--border);
-  font-size:13px;
-  animation:pop .25s ease both;
-}
-@keyframes pop{
-  from{opacity:0;transform:scale(.85)}
-  to{opacity:1;transform:none}
+  background:#1d275a;
+  font-size:12px;
 }
 
-/* ================= STATES ================= */
-.state{text-align:center;padding:120px;color:var(--muted)}
-.spinner{
-  width:60px;height:60px;
-  border-radius:50%;
-  border:4px solid var(--border);
-  border-top-color:var(--accent);
-  margin:0 auto 26px;
-  animation:spin .9s linear infinite;
+/* =========================================================
+   COMPARE
+   ========================================================= */
+.compare{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:24px;
 }
-@keyframes spin{to{transform:rotate(360deg)}}
 
-@media(max-width:1000px){
-  .header-inner{grid-template-columns:1fr}
-  .player-hero{grid-template-columns:1fr}
+/* =========================================================
+   STATE
+   ========================================================= */
+.state{text-align:center;padding:80px;color:var(--muted)}
+
+@media(max-width:900px){
+  .player-hero,.compare{grid-template-columns:1fr}
   .stats{grid-template-columns:repeat(2,1fr)}
 }
 </style>
@@ -270,7 +230,7 @@ main{
   <div class="header-inner">
     <div class="logo" onclick="go('/')">Game Stats</div>
     <div class="search"><input id="search" placeholder="Search players…"></div>
-    <div class="recent-btn" onclick="go('/recent')">Recent Games</div>
+    <div class="recent-btn" onclick="go('/recent')">Recent</div>
   </div>
 </header>
 
@@ -281,27 +241,30 @@ const API="https://tracker-s9qq.onrender.com";
 const app=document.getElementById("app");
 const search=document.getElementById("search");
 
-let d;
+let t;
 search.oninput=()=>{
-  clearTimeout(d);
+  clearTimeout(t);
   const q=search.value.trim();
   if(!q)return;
-  d=setTimeout(()=>go("/search?q="+encodeURIComponent(q)),300);
+  t=setTimeout(()=>go("/search?q="+encodeURIComponent(q)),300);
 };
 
 window.addEventListener("hashchange",router);
 function go(p){location.hash="#"+p}
-function loading(){app.innerHTML=`<div class="state"><div class="spinner"></div>Loading…</div>`}
+function loading(){app.innerHTML='<div class="state">Loading…</div>'}
 async function j(u){const r=await fetch(u);if(!r.ok)throw 0;return r.json()}
-function dur(sec){return sec<60?sec+"s":(sec/60).toFixed(1)+" min"}
+function dur(s){return s<60?s+"s":(s/60).toFixed(1)+" min"}
 
+/* ================= ROUTER ================= */
 function router(){
   const h=location.hash.slice(1)||"/";
   const [p,q]=h.split("?");
+  const qs=new URLSearchParams(q||"");
   if(p==="/")home();
   else if(p==="/recent")recent();
-  else if(p==="/search")searchPlayers(new URLSearchParams(q).get("q")||"");
-  else if(p.startsWith("/player/"))player(decodeURIComponent(p.slice(8)));
+  else if(p==="/search")searchPlayers(qs.get("q"));
+  else if(p==="/compare")compare(qs.get("A"),qs.get("B"));
+  else if(p.startsWith("/player/"))player(decodeURIComponent(p.slice(8)),qs);
   else if(p.startsWith("/match/"))match(decodeURIComponent(p.slice(7)));
 }
 
@@ -313,16 +276,15 @@ async function home(){
   app.innerHTML=`
     <div class="card">
       <div class="card-title">Leaderboard</div>
-      <div class="leaderboard-grid">
+      <div class="lb-grid">
         ${d.leaderboard.map(p=>`
-          <div class="player-card" onclick="go('/player/${encodeURIComponent(p.display_name)}')">
-            <div class="player-name">${p.display_name}</div>
-            <div class="player-stats">
-              <div>${p.wins}W</div>
-              <div>${p.losses}L</div>
-              <div>${p.games_played} Games</div>
+          <div class="lb-card" onclick="go('/player/${encodeURIComponent(p.display_name)}')">
+            <div class="lb-name">${p.display_name}</div>
+            <div class="lb-stats">
+              <span>${p.wins}W</span>
+              <span>${p.losses}L</span>
+              <span>${p.games_played} games</span>
             </div>
-            <div class="player-arrow">→</div>
           </div>`).join("")}
       </div>
     </div>`;
@@ -340,34 +302,20 @@ async function recent(){
         <div class="row" onclick="go('/match/${m.id||m.match_id}')">
           <div><strong>${m.winner}</strong> won</div>
           <div class="muted">${dur(m.duration_sec||0)}</div>
-          <div class="muted">View →</div>
-        </div>`).join("")}
-    </div>`;
-}
-
-/* ================= SEARCH ================= */
-async function searchPlayers(q){
-  loading();
-  const ps=await j(API+"/players?q="+encodeURIComponent(q));
-  app.innerHTML=`
-    <div class="back" onclick="history.back()">← Back</div>
-    <div class="card">
-      <div class="card-title">Search Results</div>
-      ${ps.map(p=>`
-        <div class="row" onclick="go('/player/${encodeURIComponent(p.name)}')">
-          <div><strong>${p.name}</strong></div>
-          <div class="muted">${p.wins}W</div>
-          <div class="muted">${p.losses}L</div>
+          <div class="muted">View</div>
         </div>`).join("")}
     </div>`;
 }
 
 /* ================= PLAYER ================= */
-async function player(name){
+async function player(name,qs){
   loading();
   const d=await j(API+"/player/"+encodeURIComponent(name));
 
   let words=[],seconds=0;
+  let streak=0,maxWin=0,maxLoss=0;
+  let cur=0,last=null;
+
   for(const id of d.profile.matches){
     const m=await j(API+"/match/"+id);
     seconds+=m.duration_sec;
@@ -375,8 +323,13 @@ async function player(name){
     if(pl) words.push(...pl.words);
   }
 
-  const winRate=((d.profile.wins/d.profile.games_played)*100).toFixed(1);
-  const lossRate=((d.profile.losses/d.profile.games_played)*100).toFixed(1);
+  d.timeline.forEach(t=>{
+    if(t.result===last) cur++;
+    else cur=1;
+    last=t.result;
+    if(t.result==="win") maxWin=Math.max(maxWin,cur);
+    if(t.result==="loss") maxLoss=Math.max(maxLoss,cur);
+  });
 
   app.innerHTML=`
     <div class="back" onclick="history.back()">← Back</div>
@@ -384,78 +337,73 @@ async function player(name){
     <div class="card">
       <div class="player-hero">
         <div>
-          <div class="player-name">${d.profile.display_name}</div>
-          <div class="muted">${d.profile.games_played} games · ${dur(seconds)} played</div>
+          <div class="card-title">${d.profile.display_name}</div>
+          <div class="muted">${d.profile.games_played} games · ${dur(seconds)}</div>
         </div>
         <div class="stats">
-          <div class="stat" onclick="filter('win')">
-            <div class="stat-value">${d.profile.wins}</div>
-            <div class="stat-label">Wins · ${winRate}%</div>
-          </div>
-          <div class="stat" onclick="filter('loss')">
-            <div class="stat-value">${d.profile.losses}</div>
-            <div class="stat-label">Losses · ${lossRate}%</div>
-          </div>
-          <div class="stat">
-            <div class="stat-value">${d.profile.games_played}</div>
-            <div class="stat-label">Total Games</div>
-          </div>
-          <div class="stat" onclick="showWords()">
-            <div class="stat-value">${words.length}</div>
-            <div class="stat-label">Total Words</div>
-          </div>
+          <div class="stat"><div class="stat-value">${d.profile.wins}</div><div class="stat-label">Wins</div></div>
+          <div class="stat"><div class="stat-value">${d.profile.losses}</div><div class="stat-label">Losses</div></div>
+          <div class="stat" onclick="showWords()"><div class="stat-value">${words.length}</div><div class="stat-label">Words</div></div>
+          <div class="stat"><div class="stat-value">${maxWin}</div><div class="stat-label">Best Win Streak</div></div>
+          <div class="stat"><div class="stat-value">${maxLoss}</div><div class="stat-label">Worst Loss Streak</div></div>
         </div>
       </div>
     </div>
 
-    <div class="card" id="timeline">
+    <div class="card">
       <div class="card-title">Recent Matches</div>
       ${d.timeline.map(t=>`
-        <div class="row" data-result="${t.result}" onclick="go('/match/${t.match_id}')">
+        <div class="row" onclick="go('/match/${t.match_id}')">
           <div>${t.result==="win"?"Victory":"Defeat"}</div>
           <span class="badge ${t.result}">${t.result}</span>
           <div class="muted">${t.ago}</div>
         </div>`).join("")}
     </div>
 
-    <div class="card" id="all-words" style="display:none">
-      <div class="card-title">All Words Used</div>
-      <div class="words">
-        ${words.map(w=>`<div class="word">${w}</div>`).join("")}
-      </div>
+    <div class="card" id="words" style="display:none">
+      <div class="card-title">Word Analytics</div>
+      <div class="words">${words.map(w=>`<div class="word">${w}</div>`).join("")}</div>
     </div>`;
 }
 
-function filter(type){
-  document.querySelectorAll("#timeline .row").forEach(r=>{
-    r.style.display=r.dataset.result===type?"grid":"none";
-  });
-}
 function showWords(){
-  const el=document.getElementById("all-words");
-  el.style.display="block";
-  el.scrollIntoView({behavior:"smooth"});
+  const w=document.getElementById("words");
+  w.style.display="block";
+  w.scrollIntoView({behavior:"smooth"});
+}
+
+/* ================= COMPARE ================= */
+async function compare(a,b){
+  loading();
+  const A=await j(API+"/player/"+a);
+  const B=await j(API+"/player/"+b);
+
+  app.innerHTML=`
+    <div class="back" onclick="history.back()">← Back</div>
+    <div class="card">
+      <div class="card-title">Comparison</div>
+      <div class="compare">
+        <div><strong>${A.profile.display_name}</strong><div>${A.profile.wins}W ${A.profile.losses}L</div></div>
+        <div><strong>${B.profile.display_name}</strong><div>${B.profile.wins}W ${B.profile.losses}L</div></div>
+      </div>
+    </div>`;
 }
 
 /* ================= MATCH ================= */
 async function match(id){
   loading();
-  const m=await j(API+"/match/"+encodeURIComponent(id));
+  const m=await j(API+"/match/"+id);
   app.innerHTML=`
     <div class="back" onclick="history.back()">← Back</div>
     <div class="card">
-      <div class="muted">Match ID · ${m.id}</div>
-      <div class="card-title">${m.winner} won the match</div>
-      <div class="muted">${dur(m.duration_sec)} · ${new Date(m.played_at).toLocaleString()}</div>
-
+      <div class="muted">Match ID ${m.id}</div>
+      <div class="card-title">${m.winner} won</div>
+      <div class="muted">${dur(m.duration_sec)}</div>
       ${m.players.map(p=>`
-        <div style="margin-top:30px">
+        <div style="margin-top:20px">
           <strong>${p.name}</strong>
           <span class="badge ${p.result}">${p.result}</span>
-          <div class="muted">${p.word_count} words</div>
-          <div class="words">
-            ${p.words.map(w=>`<div class="word">${w}</div>`).join("")}
-          </div>
+          <div class="words">${p.words.map(w=>`<div class="word">${w}</div>`).join("")}</div>
         </div>`).join("")}
     </div>`;
 }
@@ -463,4 +411,4 @@ async function match(id){
 router();
 </script>
 </body>
-   </html>
+</html>
