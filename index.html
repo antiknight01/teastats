@@ -73,7 +73,7 @@ html,body{
 a{text-decoration:none;color:inherit}
 
 /* =========================================================
-   APP SHELL
+   LAYOUT
    ========================================================= */
 #app-root{min-height:100vh;display:flex;flex-direction:column}
 
@@ -97,7 +97,6 @@ header{
 .logo{
   font-size:var(--font-xl);
   font-weight:900;
-  letter-spacing:.4px;
   cursor:pointer;
 }
 .logo:hover{color:var(--accent)}
@@ -110,23 +109,14 @@ header{
   background:var(--bg-2);
   color:var(--text-0);
 }
-.search input:focus{
-  outline:none;
-  border-color:var(--accent);
-  box-shadow:0 0 0 2px var(--accent-glow);
-}
 
-/* =========================================================
-   RECENT BUTTON
-   ========================================================= */
 .recent-btn{
   padding:12px 18px;
   border-radius:999px;
   font-size:var(--font-sm);
-  font-weight:700;
+  font-weight:800;
   background:linear-gradient(180deg,var(--accent),#2f78d6);
   color:#061428;
-  box-shadow:0 0 0 0 rgba(77,163,255,.6);
   cursor:pointer;
   transition:transform var(--ease),box-shadow var(--ease);
 }
@@ -135,9 +125,6 @@ header{
   box-shadow:0 0 0 6px rgba(77,163,255,.15),0 12px 30px rgba(0,0,0,.6);
 }
 
-/* =========================================================
-   MAIN
-   ========================================================= */
 main{
   max-width:1400px;
   margin:auto;
@@ -147,7 +134,7 @@ main{
 }
 
 /* =========================================================
-   LEADERBOARD (FULL WIDTH)
+   LEADERBOARD
    ========================================================= */
 .leaderboard{
   width:100%;
@@ -161,51 +148,22 @@ main{
 .lb-header{
   display:flex;
   justify-content:space-between;
-  align-items:flex-end;
   margin-bottom:var(--space-4);
 }
 
-.lb-title{
-  font-size:var(--font-xxl);
-  font-weight:900;
-}
+.lb-title{font-size:var(--font-xxl);font-weight:900}
+.lb-sub{font-size:var(--font-sm);color:var(--text-3)}
 
-.lb-sub{
-  font-size:var(--font-sm);
-  color:var(--text-3);
-}
-
-table{
-  width:100%;
-  border-collapse:collapse;
-}
-
+table{width:100%;border-collapse:collapse}
 th{
   text-align:left;
   font-size:var(--font-xs);
   color:var(--text-3);
   padding-bottom:var(--space-2);
 }
-
-td{
-  padding:var(--space-3) 0;
-  font-size:var(--font-md);
-}
-
+td{padding:var(--space-3) 0;font-size:var(--font-md)}
 tr.clickable{cursor:pointer}
-tr.clickable:hover{background:rgba(255,255,255,.03)}
-
-/* =========================================================
-   BADGES
-   ========================================================= */
-.badge{
-  padding:3px 12px;
-  border-radius:999px;
-  font-size:var(--font-xs);
-  font-weight:800;
-}
-.badge.win{background:var(--win-bg);color:var(--win)}
-.badge.loss{background:var(--loss-bg);color:var(--loss)}
+tr.clickable:hover{background:rgba(255,255,255,.04)}
 
 /* =========================================================
    CARDS
@@ -225,8 +183,35 @@ tr.clickable:hover{background:rgba(255,255,255,.03)}
   margin-bottom:var(--space-4);
 }
 
-.card-title{font-size:var(--font-lg);font-weight:800}
+.card-title{font-size:var(--font-lg);font-weight:900}
 .card-meta{font-size:var(--font-sm);color:var(--text-3)}
+
+/* =========================================================
+   ROWS (CLEAR SEPARATION)
+   ========================================================= */
+.row{
+  display:grid;
+  grid-template-columns:1fr auto auto;
+  gap:var(--space-4);
+  padding:var(--space-4);
+  border-radius:var(--radius-md);
+  margin-bottom:var(--space-3);
+  border:1px solid var(--border-0);
+}
+.row.clickable{cursor:pointer}
+.row.clickable:hover{background:rgba(255,255,255,.04)}
+
+/* =========================================================
+   BADGES
+   ========================================================= */
+.badge{
+  padding:3px 12px;
+  border-radius:999px;
+  font-size:var(--font-xs);
+  font-weight:800;
+}
+.badge.win{background:var(--win-bg);color:var(--win)}
+.badge.loss{background:var(--loss-bg);color:var(--loss)}
 
 /* =========================================================
    PLAYER PROFILE
@@ -259,7 +244,10 @@ tr.clickable:hover{background:rgba(255,255,255,.03)}
   border-radius:var(--radius-md);
   padding:var(--space-4);
   text-align:center;
+  cursor:pointer;
 }
+.stat:hover{background:#2c3652}
+
 .stat-value{
   font-size:var(--font-xxl);
   font-weight:900;
@@ -287,10 +275,7 @@ tr.clickable:hover{background:rgba(255,255,255,.03)}
   margin-top:var(--space-2);
   padding-left:var(--space-4);
 }
-.words li{
-  font-size:var(--font-sm);
-  color:var(--text-1);
-}
+.words li{font-size:var(--font-sm);color:var(--text-1)}
 
 /* =========================================================
    STATES
@@ -352,6 +337,12 @@ function go(p){location.hash="#"+p}
 function loading(){app.innerHTML=`<div class="state"><div class="spinner"></div>Loading…</div>`}
 function error(){app.innerHTML=`<div class="state">Failed to load data.</div>`}
 async function fetchJSON(u){const r=await fetch(u);if(!r.ok)throw 0;return r.json()}
+function fmtDuration(sec){
+  if(sec<60) return sec+"s";
+  if(sec<3600) return (sec/60).toFixed(1)+" min";
+  const m=Math.floor(sec/60),s=sec%60;
+  return m+":"+(s<10?"0":"")+s;
+}
 
 /* ================= ROUTER ================= */
 function router(){
@@ -400,12 +391,12 @@ async function recent(){
     const d=await fetchJSON(API_BASE+"/");
     app.innerHTML=`
       <div class="card">
-        <div class="card-header">
-          <div class="card-title">Recent Matches</div>
-        </div>
+        <div class="card-header"><div class="card-title">Recent Matches</div></div>
         ${d.recent_matches.map(m=>`
           <div class="row clickable" data-match="${m.id||m.match_id}">
-            Winner: <strong>${m.winner}</strong>
+            <div>Winner: <strong>${m.winner}</strong></div>
+            <div class="card-meta">${fmtDuration(m.duration_sec||0)}</div>
+            <div class="card-meta">Open</div>
           </div>`).join("")}
       </div>`;
     bind();
@@ -419,14 +410,12 @@ async function search(q){
     const ps=await fetchJSON(API_BASE+"/players?q="+encodeURIComponent(q));
     app.innerHTML=`
       <div class="card">
-        <div class="card-header">
-          <div class="card-title">Search</div>
-          <div class="card-meta">"${q}"</div>
-        </div>
+        <div class="card-header"><div class="card-title">Search</div></div>
         ${ps.map(p=>`
           <div class="row clickable" data-player="${p.name}">
-            <strong>${p.name}</strong>
-            <span class="card-meta">${p.wins}W ${p.losses}L</span>
+            <div><strong>${p.name}</strong></div>
+            <div class="card-meta">${p.wins}W</div>
+            <div class="card-meta">${p.losses}L</div>
           </div>`).join("")}
       </div>`;
     bind();
@@ -447,25 +436,54 @@ async function player(name){
             <div class="player-sub">${p.games_played} games played</div>
           </div>
           <div class="stats">
-            <div class="stat"><div class="stat-value">${p.wins}</div><div class="stat-label">Wins</div></div>
-            <div class="stat"><div class="stat-value">${p.losses}</div><div class="stat-label">Losses</div></div>
+            <div class="stat" id="stat-wins"><div class="stat-value">${p.wins}</div><div class="stat-label">Wins</div></div>
+            <div class="stat" id="stat-losses"><div class="stat-value">${p.losses}</div><div class="stat-label">Losses</div></div>
             <div class="stat"><div class="stat-value">${p.games_played}</div><div class="stat-label">Total Games</div></div>
-            <div class="stat"><div class="stat-value">${p.total_words}</div><div class="stat-label">Total Words</div></div>
+            <div class="stat" id="stat-words"><div class="stat-value">${p.total_words}</div><div class="stat-label">Total Words</div></div>
           </div>
         </div>
       </div>
 
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">Recent Games</div>
-        </div>
+      <div class="card" id="timeline">
+        <div class="card-header"><div class="card-title">Recent Matches</div></div>
         ${d.timeline.map(t=>`
-          <div class="row clickable" data-match="${t.match_id}">
+          <div class="row clickable" data-match="${t.match_id}" data-result="${t.result}">
+            <div>Match ${t.match_id}</div>
             <span class="badge ${t.result}">${t.result}</span>
-            <span class="card-meta">${t.ago}</span>
+            <div class="card-meta">${t.ago}</div>
           </div>`).join("")}
       </div>`;
     bind();
+
+    document.getElementById("stat-wins").onclick=()=>filterTimeline("win");
+    document.getElementById("stat-losses").onclick=()=>filterTimeline("loss");
+    document.getElementById("stat-words").onclick=()=>showAllWords(p.display_name,p.matches);
+  }catch{error()}
+}
+
+function filterTimeline(type){
+  document.querySelectorAll("#timeline .row").forEach(r=>{
+    r.style.display = r.dataset.result===type ? "grid" : "none";
+  });
+}
+
+async function showAllWords(playerName,matchIds){
+  loading();
+  try{
+    let words=[];
+    for(const id of matchIds){
+      const m=await fetchJSON(API_BASE+"/match/"+id);
+      const pl=m.players.find(x=>x.name===playerName);
+      if(pl) words.push(...pl.words);
+    }
+    app.innerHTML=`
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">All Words Used</div>
+          <div class="card-meta">${words.length} total</div>
+        </div>
+        <ul class="words">${words.map(w=>`<li>${w}</li>`).join("")}</ul>
+      </div>`;
   }catch{error()}
 }
 
@@ -480,8 +498,8 @@ async function match(id){
           <div class="card-title">Match Details</div>
           <div class="match-meta">
             <div>Winner: <strong>${m.winner}</strong></div>
-            <div>Duration: <strong>${m.duration_sec}s</strong></div>
-            <div>Played: ${new Date(m.played_at).toLocaleString()}</div>
+            <div>Duration: <strong>${fmtDuration(m.duration_sec)}</strong></div>
+            <div>${new Date(m.played_at).toLocaleString()}</div>
           </div>
         </div>
         ${m.players.map(p=>`
@@ -489,9 +507,7 @@ async function match(id){
             <strong>${p.name}</strong>
             <span class="badge ${p.result}">${p.result}</span>
             <div class="card-meta">${p.word_count} words</div>
-            <ul class="words">
-              ${p.words.map(w=>`<li>${w}</li>`).join("")}
-            </ul>
+            <ul class="words">${p.words.map(w=>`<li>${w}</li>`).join("")}</ul>
           </div>`).join("")}
       </div>`;
   }catch{error()}
