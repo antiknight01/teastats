@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
+<meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>☕ Blacktea Stats</title>
 
 <style>
-/* =====================================================
-   CORE DESIGN SYSTEM
-   ===================================================== */
+/* ======================================================
+   DESIGN SYSTEM (STABLE)
+   ====================================================== */
 :root{
   --bg:#0b1020;
   --panel:#121833;
@@ -19,15 +19,14 @@
   --muted:#aeb6df;
 
   --accent:#6bb2ff;
-  --accent-soft:#8fc6ff;
   --win:#7fc4ff;
   --loss:#ff8b8b;
 
   --radius:16px;
   --radius-lg:22px;
 
-  --shadow:0 18px 50px rgba(0,0,0,.45);
-  --ease:300ms cubic-bezier(.22,.61,.36,1);
+  --shadow:0 16px 40px rgba(0,0,0,.45);
+  --ease:280ms cubic-bezier(.22,.61,.36,1);
 }
 
 *{box-sizing:border-box}
@@ -37,16 +36,15 @@ html,body{
   color:var(--text);
   font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto;
 }
-a{text-decoration:none;color:inherit}
 
-/* =====================================================
+/* ======================================================
    HEADER
-   ===================================================== */
+   ====================================================== */
 header{
   position:sticky;
   top:0;
   z-index:50;
-  background:rgba(11,16,32,.9);
+  background:rgba(11,16,32,.92);
   backdrop-filter:blur(12px);
   border-bottom:1px solid var(--border);
 }
@@ -58,9 +56,9 @@ header{
   font-weight:900;
 }
 
-/* =====================================================
+/* ======================================================
    MAIN
-   ===================================================== */
+   ====================================================== */
 main{
   max-width:1400px;
   margin:auto;
@@ -72,59 +70,9 @@ main{
   to{opacity:1;transform:none}
 }
 
-/* =====================================================
-   SEARCH
-   ===================================================== */
-.search-wrap{
-  max-width:640px;
-  margin:0 auto 50px;
-  position:relative;
-}
-.search-input{
-  width:100%;
-  padding:18px 22px;
-  border-radius:999px;
-  border:1px solid var(--border);
-  background:var(--panel);
-  color:var(--text);
-  font-size:16px;
-}
-.search-input:focus{
-  outline:none;
-  border-color:var(--accent);
-}
-.search-btn{
-  position:absolute;
-  right:6px;
-  top:6px;
-  bottom:6px;
-  padding:0 22px;
-  border-radius:999px;
-  border:none;
-  background:var(--accent);
-  color:#071427;
-  font-weight:900;
-  cursor:pointer;
-}
-.search-results{
-  position:absolute;
-  top:110%;
-  width:100%;
-  background:var(--panel-2);
-  border:1px solid var(--border);
-  border-radius:18px;
-  overflow:hidden;
-  animation:fade .2s ease both;
-}
-.search-item{
-  padding:14px 20px;
-  cursor:pointer;
-}
-.search-item:hover{background:#1f2a5c}
-
-/* =====================================================
-   CARDS
-   ===================================================== */
+/* ======================================================
+   GENERIC UI
+   ====================================================== */
 .card{
   background:var(--panel);
   border:1px solid var(--border);
@@ -139,10 +87,34 @@ main{
   margin-bottom:20px;
 }
 .muted{color:var(--muted);font-size:13px}
+.back{
+  color:var(--accent);
+  font-weight:800;
+  cursor:pointer;
+  margin-bottom:18px;
+  display:inline-block;
+}
 
-/* =====================================================
+/* ======================================================
+   HOME
+   ====================================================== */
+.home-actions{
+  display:flex;
+  justify-content:flex-end;
+  margin-bottom:26px;
+}
+.btn{
+  padding:12px 20px;
+  border-radius:999px;
+  background:var(--accent);
+  color:#071427;
+  font-weight:900;
+  cursor:pointer;
+}
+
+/* ======================================================
    LEADERBOARD
-   ===================================================== */
+   ====================================================== */
 .lb-grid{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
@@ -169,47 +141,37 @@ main{
   color:var(--muted);
 }
 
-/* =====================================================
-   MATCH ROW
-   ===================================================== */
-.row{
-  display:grid;
-  grid-template-columns:1fr auto auto;
-  gap:16px;
-  padding:18px;
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  margin-bottom:14px;
-  cursor:pointer;
-  transition:var(--ease);
-}
-.row:hover{
-  transform:translateY(-4px);
-  box-shadow:var(--shadow);
-}
-
-/* =====================================================
+/* ======================================================
    PROFILE
-   ===================================================== */
-.player-hero{
+   ====================================================== */
+.profile-hero{
   display:grid;
-  grid-template-columns:1.2fr 2fr;
-  gap:24px;
+  grid-template-columns:1.4fr 2fr;
+  gap:26px;
+}
+.profile-name{
+  font-size:30px;
+  font-weight:900;
 }
 .stats{
   display:grid;
-  grid-template-columns:repeat(3,1fr);
+  grid-template-columns:repeat(4,1fr);
   gap:14px;
 }
 .stat{
   background:var(--panel-2);
   border-radius:var(--radius);
-  padding:20px;
+  padding:18px;
   text-align:center;
 }
-.stat-value{font-size:26px;font-weight:900}
-.stat-label{font-size:12px;color:var(--muted)}
-
+.stat-value{
+  font-size:24px;
+  font-weight:900;
+}
+.stat-label{
+  font-size:12px;
+  color:var(--muted);
+}
 .compare-btn{
   margin-top:18px;
   display:inline-block;
@@ -221,9 +183,24 @@ main{
   cursor:pointer;
 }
 
-/* =====================================================
+/* ======================================================
+   ROWS
+   ====================================================== */
+.row{
+  display:grid;
+  grid-template-columns:1fr auto auto;
+  gap:16px;
+  padding:18px;
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  margin-bottom:14px;
+  cursor:pointer;
+}
+.row:hover{background:#1a2350}
+
+/* ======================================================
    WORDS
-   ===================================================== */
+   ====================================================== */
 .words{
   display:flex;
   flex-wrap:wrap;
@@ -234,62 +211,25 @@ main{
   border-radius:999px;
   background:#1e285a;
   font-size:12px;
-  animation:pop .25s ease both;
-}
-@keyframes pop{
-  from{opacity:0;transform:scale(.85)}
-  to{opacity:1;transform:none}
 }
 
-/* =====================================================
-   MODAL (COMPARE)
-   ===================================================== */
-.modal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.6);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:100;
+/* ======================================================
+   COMPARE
+   ====================================================== */
+.compare-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:24px;
 }
-.modal-box{
-  background:var(--panel);
-  border-radius:22px;
-  padding:28px;
-  width:420px;
-}
-.modal-title{
-  font-size:20px;
-  font-weight:900;
-  margin-bottom:14px;
-}
-.modal input{
-  width:100%;
-  padding:14px;
-  border-radius:14px;
-  border:1px solid var(--border);
+.compare-card{
   background:var(--panel-2);
-  color:var(--text);
+  border-radius:var(--radius);
+  padding:22px;
 }
-.modal-list{
-  margin-top:12px;
-}
-.modal-item{
-  padding:10px;
-  cursor:pointer;
-}
-.modal-item:hover{background:#1f2a5c}
 
-/* =====================================================
-   UTIL
-   ===================================================== */
-.back{
-  color:var(--accent);
-  font-weight:800;
-  cursor:pointer;
-  margin-bottom:18px;
-  display:inline-block;
+@media(max-width:900px){
+  .profile-hero,.compare-grid{grid-template-columns:1fr}
+  .stats{grid-template-columns:repeat(2,1fr)}
 }
 </style>
 </head>
@@ -305,39 +245,21 @@ main{
 const API="https://tracker-s9qq.onrender.com";
 const app=document.getElementById("app");
 
-/* ================= SEARCH ================= */
-let sTimer;
-function searchBar(){
-  return `
-    <div class="search-wrap">
-      <input class="search-input" placeholder="Search players…" oninput="onSearch(this.value)">
-      <button class="search-btn">Search</button>
-      <div id="search-results"></div>
-    </div>`;
-}
+window.addEventListener("hashchange",router);
+function go(p){location.hash="#"+p}
+function dur(sec){return sec<60?sec+"s":(sec/60).toFixed(1)+" min"}
 
-async function onSearch(q){
-  clearTimeout(sTimer);
-  const rBox=document.getElementById("search-results");
-  if(!q){rBox.innerHTML="";return;}
-  sTimer=setTimeout(async()=>{
-    const ps=await (await fetch(API+"/players?q="+encodeURIComponent(q))).json();
-    rBox.innerHTML=`
-      <div class="search-results">
-        ${ps.map(p=>`
-          <div class="search-item" onclick="go('/player/${encodeURIComponent(p.name)}')">${p.name}</div>`).join("")}
-      </div>`;
-  },200);
+async function j(u){
+  const r=await fetch(u);
+  if(!r.ok)throw 0;
+  return r.json();
 }
 
 /* ================= ROUTER ================= */
-window.addEventListener("hashchange",router);
-function go(p){location.hash="#"+p}
-function dur(s){return s<60?s+"s":(s/60).toFixed(1)+" min"}
-
-async function router(){
+function router(){
   const h=location.hash.slice(1)||"/";
   if(h==="/")home();
+  else if(h==="/recent")recent();
   else if(h.startsWith("/player/"))player(decodeURIComponent(h.slice(8)));
   else if(h.startsWith("/match/"))match(decodeURIComponent(h.slice(7)));
   else if(h.startsWith("/compare/")){
@@ -348,9 +270,13 @@ async function router(){
 
 /* ================= HOME ================= */
 async function home(){
-  const d=await (await fetch(API+"/")).json();
+  const d=await j(API+"/");
+  d.leaderboard.sort((a,b)=>b.wins-a.wins);
+
   app.innerHTML=`
-    ${searchBar()}
+    <div class="home-actions">
+      <div class="btn" onclick="go('/recent')">Recent Games</div>
+    </div>
 
     <div class="card">
       <div class="card-title">Leaderboard</div>
@@ -365,8 +291,14 @@ async function home(){
             </div>
           </div>`).join("")}
       </div>
-    </div>
+    </div>`;
+}
 
+/* ================= RECENT ================= */
+async function recent(){
+  const d=await j(API+"/");
+  app.innerHTML=`
+    <div class="back" onclick="history.back()">← Back</div>
     <div class="card">
       <div class="card-title">Recent Games</div>
       ${d.recent_matches.map(m=>`
@@ -380,89 +312,119 @@ async function home(){
 
 /* ================= PLAYER ================= */
 async function player(name){
-  const d=await (await fetch(API+"/player/"+encodeURIComponent(name))).json();
+  const d=await j(API+"/player/"+encodeURIComponent(name));
 
-  let words=[];
+  let totalSeconds=0, words=[];
+  let bestWin=0, curWin=0, curLoss=0;
+  let currentStreak={type:null,count:0};
+
   for(const id of d.profile.matches){
-    const m=await (await fetch(API+"/match/"+id)).json();
+    const m=await j(API+"/match/"+id);
+    totalSeconds+=m.duration_sec;
     const p=m.players.find(x=>x.name===d.profile.display_name);
     if(p) words.push(...p.words);
   }
+
+  d.timeline.forEach(t=>{
+    if(t.result==="win"){
+      curWin++; curLoss=0;
+      bestWin=Math.max(bestWin,curWin);
+    }else{
+      curLoss++; curWin=0;
+    }
+    currentStreak={type:t.result,count:t.result==="win"?curWin:curLoss};
+  });
 
   app.innerHTML=`
     <div class="back" onclick="history.back()">← Back</div>
 
     <div class="card">
-      <div class="player-hero">
+      <div class="profile-hero">
         <div>
-          <div class="card-title">${d.profile.display_name}</div>
-          <div class="muted">${d.profile.games_played} games · ${words.length} words</div>
+          <div class="profile-name">${d.profile.display_name}</div>
+          <div class="muted">${d.profile.games_played} games · ${dur(totalSeconds)}</div>
           <div class="compare-btn" onclick="openCompare('${d.profile.display_name}')">
             Compare Player
           </div>
         </div>
+
         <div class="stats">
           <div class="stat"><div class="stat-value">${d.profile.wins}</div><div class="stat-label">Wins</div></div>
           <div class="stat"><div class="stat-value">${d.profile.losses}</div><div class="stat-label">Losses</div></div>
           <div class="stat"><div class="stat-value">${d.profile.games_played}</div><div class="stat-label">Games</div></div>
+          <div class="stat"><div class="stat-value">${words.length}</div><div class="stat-label">Words</div></div>
+          <div class="stat"><div class="stat-value">${bestWin}</div><div class="stat-label">Best Win Streak</div></div>
+          <div class="stat">
+            <div class="stat-value">${currentStreak.count}</div>
+            <div class="stat-label">Current ${currentStreak.type}</div>
+          </div>
         </div>
       </div>
     </div>
 
     <div class="card">
-      <div class="card-title">Words Used</div>
-      <div class="words">${words.map(w=>`<div class="word">${w}</div>`).join("")}</div>
+      <div class="card-title">Recent Matches</div>
+      ${d.timeline.map(t=>`
+        <div class="row" onclick="go('/match/${t.match_id}')">
+          <div>${t.result==="win"?"Victory":"Defeat"}</div>
+          <div class="muted">${t.ago}</div>
+          <div class="muted">Open</div>
+        </div>`).join("")}
     </div>`;
-}
-
-/* ================= COMPARE MODAL ================= */
-async function openCompare(a){
-  const ps=await (await fetch(API+"/players?q=")).json();
-  document.body.insertAdjacentHTML("beforeend",`
-    <div class="modal" onclick="this.remove()">
-      <div class="modal-box" onclick="event.stopPropagation()">
-        <div class="modal-title">Compare with…</div>
-        <input placeholder="Search player…" oninput="filterCompare(this.value)">
-        <div class="modal-list">
-          ${ps.filter(p=>p.name!==a).map(p=>`
-            <div class="modal-item" onclick="go('/compare/${encodeURIComponent(a)}|${encodeURIComponent(p.name)}')">
-              ${p.name}
-            </div>`).join("")}
-        </div>
-      </div>
-    </div>`);
-}
-
-function filterCompare(q){
-  document.querySelectorAll(".modal-item").forEach(i=>{
-    i.style.display=i.textContent.toLowerCase().includes(q.toLowerCase())?"block":"none";
-  });
 }
 
 /* ================= COMPARE ================= */
 async function compare(a,b){
-  const A=await (await fetch(API+"/player/"+a)).json();
-  const B=await (await fetch(API+"/player/"+b)).json();
+  const A=await j(API+"/player/"+a);
+  const B=await j(API+"/player/"+b);
+
+  async function collect(p){
+    let seconds=0, words=[];
+    for(const id of p.profile.matches){
+      const m=await j(API+"/match/"+id);
+      seconds+=m.duration_sec;
+      const pl=m.players.find(x=>x.name===p.profile.display_name);
+      if(pl) words.push(...pl.words);
+    }
+    return {seconds,words};
+  }
+
+  const da=await collect(A);
+  const db=await collect(B);
+  const shared=[...new Set(da.words.filter(w=>db.words.includes(w)))];
+
   app.innerHTML=`
     <div class="back" onclick="history.back()">← Back</div>
+
     <div class="card">
-      <div class="card-title">Comparison</div>
-      <div class="player-hero">
-        <div>
-          <strong>${A.profile.display_name}</strong>
-          <div class="muted">${A.profile.wins}W ${A.profile.losses}L</div>
-        </div>
-        <div>
-          <strong>${B.profile.display_name}</strong>
-          <div class="muted">${B.profile.wins}W ${B.profile.losses}L</div>
-        </div>
+      <div class="card-title">Player Comparison</div>
+      <div class="compare-grid">
+        ${compareCard(A,da)}
+        ${compareCard(B,db)}
       </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Shared Words (${shared.length})</div>
+      <div class="words">${shared.map(w=>`<div class="word">${w}</div>`).join("")}</div>
+    </div>`;
+}
+
+function compareCard(p,d){
+  const wr=(p.profile.wins/p.profile.games_played*100).toFixed(1);
+  return `
+    <div class="compare-card">
+      <strong>${p.profile.display_name}</strong>
+      <div class="muted">${p.profile.games_played} games</div>
+      <div class="muted">${p.profile.wins}W · ${p.profile.losses}L · ${wr}% WR</div>
+      <div class="muted">${dur(d.seconds)} played</div>
+      <div class="muted">${d.words.length} words</div>
     </div>`;
 }
 
 /* ================= MATCH ================= */
 async function match(id){
-  const m=await (await fetch(API+"/match/"+id)).json();
+  const m=await j(API+"/match/"+id);
   app.innerHTML=`
     <div class="back" onclick="history.back()">← Back</div>
     <div class="card">
@@ -479,4 +441,4 @@ async function match(id){
 router();
 </script>
 </body>
-</html>
+   </html>
